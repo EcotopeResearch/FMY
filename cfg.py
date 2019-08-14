@@ -3,7 +3,7 @@
 Config file for globals used in the future weather project.
 
 @author: paul
-"""\
+"""
 
 
 #=========================================================

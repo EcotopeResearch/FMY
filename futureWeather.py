@@ -61,7 +61,7 @@ os.chdir(workingdir)
 from cfg import METHODNAMES, VARNAME, MODELNAME, SCENNAME,HRS_IN_YEAR;
 
 from OPeNDAP_load import get_data;
-from variable_conversions import get_monthly_mmms;
+from month_conversions import get_monthly_mmms;
 from weather import weather; 
 from bias_correction import bias_correct;
 from tmy_to_fmy import adjust_to_fmy;
