@@ -54,7 +54,7 @@ import pandas as pd;
 import matplotlib.pyplot as plt;
 import seaborn as sns;
 
-workingdir = 'R:/NPCC/2019_Future_Meteorological_Years (19-028-BL)/Python'
+workingdir = 'R:/NPCC/2019_Future_Meteorological_Years (19-028-BL)/Python/FMY'
 
 os.chdir(workingdir)
 
@@ -73,8 +73,8 @@ from tmy_to_fmy import adjust_to_fmy;
 
 # Paths
 weatherpath = "E:/TMY2DATA/"; # Path to local TMY data in .tm2 format
-graphpath = "./Graphs/";      # Output path for graphs
-outputpath = "./output_FMY/"  # Output path for future .tm2 and .tm3 files
+graphpath = "../Graphs/";      # Output path for graphs
+outputpath = "../output_FMY/"  # Output path for future .tm2 and .tm3 files
 
 # Output formats
 outformats = ['csv','tmy2']; # List containing ['csv','tmy2', 'tmy3'], and any combination of them or none.
