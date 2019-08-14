@@ -5,7 +5,7 @@
 the MACAv2-METDATA data then applies multiple methods for temporally downscalling 
 data to hourly features.
 
-MACA advocates for using at least 10 models in analyses.It may be worth the effort 
+MACA advocates for using at least 10 models in analyses. It may be worth the effort 
 to evaluate the relevant variables against observations, just to be cognizant of 
 model biases, but recognize that most studies have found little or no difference 
 in culling or weighting model outputs.
@@ -39,12 +39,12 @@ city        = [ "WASeattle3", "ORCorvallis3", "IDBoise3", "ORRedmond3", "NVElko3
                "IDBurley3", "IDSodaSprings3", "MTHavre3", "MTMilesCity3" ];
    
 workflow:
-    load tmy2 file
-    load GCM historical and future
-    determine future peroid of interest and cull the data
-    bias correct historical data to tmy2 file
-    adjust the variables asked to be adjusted
-    write fmy2 file
+    Set specifics (i.e. variables, cities, models, scenarios, and methods)
+    Load tmy2 file
+    Load GCM historical and future
+    Determine future peroid of interest and cull the data
+    Adjust the variables asked to be adjusted
+    Write output file in specified formats
 """
 
 #=========================================================
