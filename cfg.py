@@ -45,5 +45,5 @@ MONTHS_IN_YEAR = 12;
 #               Other Variables
 #=========================================================
 
-METHODNAMES = ('NPCC', 'Belcher', 'NPCC_Adjusted')
+METHODNAMES = ('NPCC', 'Belcher', 'NPCCAdjusted')
 

@@ -6,7 +6,7 @@ Created on Mon Aug  5 09:20:27 2019
 """
 
 from cfg import MODELNAME, SCENNAME, METHODNAMES, MONTHS_IN_YEAR;
-from variable_conversions import months2hrs;
+from month_conversions import months2hrs;
 
 import numpy as np;
 import pandas as pd;
