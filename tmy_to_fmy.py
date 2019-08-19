@@ -5,7 +5,7 @@ Created on Mon Aug  5 09:20:27 2019
 @author: paul
 """
 
-from cfg import MODELNAME, SCENNAME, METHODNAMES, MONTHS_IN_YEAR, CITY;
+from cfg import MODELNAME, SCENNAME, METHODNAMES, MONTHS_IN_YEAR;
 from month_conversions import months2hrs;
 
 import numpy as np;
@@ -20,7 +20,7 @@ from metpy.units import units
 
 def adjust_to_fmy(var, methods, tmy, dft, dfam, df1, 
                   hr_plots, ftr_yr, mm, sc, 
-                  cc0, graphdir, suppress_plts):
+                  cc0, graphdir, city_name, suppress_plts):
     """
     Function for adjusting variables from tmy to fmy, which uses various methods 
     for the different variables specified in methods. 
@@ -89,14 +89,14 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
     #=========================================================
     #                Plots
     #=========================================================
-    os.makedirs(graphdir + CITY+ '/', exist_ok=True)
+    os.makedirs(graphdir + city_name+ '/', exist_ok=True)
     
     #Temperature Plots
     if 0 in var and 1 in hr_plots and not suppress_plts:
         for ii in range(1,MONTHS_IN_YEAR+1):
 
             fig = plt.figure(figsize=(11, 7))
-            fig.suptitle(METHODNAMES[methods-1]+' Transformed Hourly TMY Temperatures for Month ' + str(ii) + '\n'+ CITY+ ' for ' + 
+            fig.suptitle(METHODNAMES[methods-1]+' Transformed Hourly TMY Temperatures for Month ' + str(ii) + '\n'+ city_name+ ' for ' + 
                          MODELNAME[mm] + ' from ' + str(ftr_yr[0]) +' - ' + 
                          str(ftr_yr[1]) + '\n running scenario: ' + SCENNAME[sc])
             ax = fig.add_subplot(111)
@@ -109,7 +109,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + CITY+ '/' + CITY+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Temperatures_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' + city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Temperatures_for_Month_'+ str(ii))
             plt.close()  
 
     ########################################################################### 
@@ -118,7 +118,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
         for ii in range(1,MONTHS_IN_YEAR+1):
 
             fig = plt.figure(figsize=(11, 7))
-            fig.suptitle(METHODNAMES[methods-1]+' Transformed Hourly TMY Relative Humidity for Month ' + str(ii) + '\n'+ CITY+  ' for ' + 
+            fig.suptitle(METHODNAMES[methods-1]+' Transformed Hourly TMY Relative Humidity for Month ' + str(ii) + '\n'+ city_name+  ' for ' + 
                          MODELNAME[mm] + ' from ' + str(ftr_yr[0]) +' - ' + 
                          str(ftr_yr[1]) + '\n running scenario: ' + SCENNAME[sc])
             ax = fig.add_subplot(111)
@@ -131,7 +131,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + CITY+ '/' +CITY+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Relative_Humidity_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Relative_Humidity_for_Month_'+ str(ii))
             plt.close() 
     ###########################################################################
     #Dew Point Plots
@@ -139,7 +139,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
         for ii in range(1,MONTHS_IN_YEAR+1):
     
             fig = plt.figure(figsize=(11, 7))
-            fig.suptitle('Belcher Hourly TMY Dew Point for Month ' + str(ii) + '\n'+ CITY + ' for ' + 
+            fig.suptitle('Belcher Hourly TMY Dew Point for Month ' + str(ii) + '\n'+ city_name + ' for ' + 
                          MODELNAME[mm] + ' from ' + str(ftr_yr[0]) +' - ' + 
                          str(ftr_yr[1]) + '\n running scenario: ' + SCENNAME[sc])
             ax = fig.add_subplot(111)
@@ -152,7 +152,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + CITY+ '/' +CITY+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_DewPoint_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_DewPoint_for_Month_'+ str(ii))
             plt.close() 
     ###########################################################################
     # Total Global Solar Plots
@@ -160,7 +160,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
         for ii in range(1,MONTHS_IN_YEAR+1):
             # Total horizontal Solar
             fig = plt.figure(figsize=(11, 7))
-            fig.suptitle('Belcher Hourly TMY Global Horizontal for Month ' + str(ii) + '\n'+ CITY + ' for ' + 
+            fig.suptitle('Belcher Hourly TMY Global Horizontal for Month ' + str(ii) + '\n'+ city_name + ' for ' + 
                          MODELNAME[mm] + ' from ' + str(ftr_yr[0]) +' - ' + 
                          str(ftr_yr[1]) + '\n running scenario: ' + SCENNAME[sc])
             ax = fig.add_subplot(111)
@@ -173,12 +173,12 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + CITY+ '/' +CITY+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Total_Horizontal_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Total_Horizontal_for_Month_'+ str(ii))
             plt.close() 
 
             # Direct Normal, dirnorm
             fig = plt.figure(figsize=(11, 7))
-            fig.suptitle('Belcher Hourly TMY Direct Normal for Month ' + str(ii) + '\n'+ CITY + ' for ' + 
+            fig.suptitle('Belcher Hourly TMY Direct Normal for Month ' + str(ii) + '\n'+ city_name + ' for ' + 
                          MODELNAME[mm] + ' from ' + str(ftr_yr[0]) +' - ' + 
                          str(ftr_yr[1]) + '\n running scenario: ' + SCENNAME[sc])
             ax = fig.add_subplot(111)
@@ -191,12 +191,12 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + CITY+ '/' +CITY+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Direct_Normal_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Direct_Normal_for_Month_'+ str(ii))
             plt.close() 
 
             #Diffuse Horizontal, difhor
             fig = plt.figure(figsize=(11, 7))
-            fig.suptitle('Belcher Hourly TMY Diffuse Horizontal for Month ' + str(ii) + '\n'+ CITY + ' for ' + 
+            fig.suptitle('Belcher Hourly TMY Diffuse Horizontal for Month ' + str(ii) + '\n'+ city_name + ' for ' + 
                          MODELNAME[mm] + ' from ' + str(ftr_yr[0]) +' - ' + 
                          str(ftr_yr[1]) + '\n running scenario: ' + SCENNAME[sc])
             ax = fig.add_subplot(111)
@@ -209,35 +209,35 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + CITY+ '/' +CITY+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Diffuse_Horizontal_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Diffuse_Horizontal_for_Month_'+ str(ii))
             plt.close() 
             
     #=========================================================
     #               Check and Finilize FMY
     #=========================================================
         
-    if sum(np.isnan(T_fmy)) > 0:     print('\nWARNING: T_fmy contains NAN for ' + CITY + '\n')
-    if sum(np.isnan(RHS_fmy)) > 0:   print('\nWARNING: RHS_fmy contains NAN for ' + CITY + '\n') 
-    if sum(np.isnan(Tdew_fmy)) > 0:  print('\nWARNING: Tdew_fmy contains NAN for ' + CITY + '\n') 
-    if sum(np.isnan(Rg_fmy)) > 0:    print('\nWARNING: Rg_fmy contains NAN for ' + CITY + '\n') 
-    if sum(np.isnan(Rdir_fmy)) > 0:  print('\nWARNING: Rdir_fmy contains NAN for ' + CITY + '\n')   
-    if sum(np.isnan(Rdiff_fmy)) > 0: print('\nWARNING: Rdiff_fmy contains NAN for ' + CITY + '\n') 
+    if sum(np.isnan(T_fmy)) > 0:     print('\nWARNING: T_fmy contains NAN for ' + city_name + '\n')
+    if sum(np.isnan(RHS_fmy)) > 0:   print('\nWARNING: RHS_fmy contains NAN for ' + city_name + '\n') 
+    if sum(np.isnan(Tdew_fmy)) > 0:  print('\nWARNING: Tdew_fmy contains NAN for ' + city_name + '\n') 
+    if sum(np.isnan(Rg_fmy)) > 0:    print('\nWARNING: Rg_fmy contains NAN for ' + city_name + '\n') 
+    if sum(np.isnan(Rdir_fmy)) > 0:  print('\nWARNING: Rdir_fmy contains NAN for ' + city_name + '\n')   
+    if sum(np.isnan(Rdiff_fmy)) > 0: print('\nWARNING: Rdiff_fmy contains NAN for ' + city_name + '\n') 
     
     if sum(RHS_fmy < 0) > 0 or sum(RHS_fmy > 100) > 0:
         print('\nWARNING: The FMY of Relative Humidity is less than 0% ('+str(sum(RHS_fmy < 0))+ 
                 ' values) and/or greater than 100% ('+str(sum(RHS_fmy > 100))+
-                ' values) for ' + CITY + '\n')
+                ' values) for ' + city_name + '\n')
                     
     if sum(Tdew_fmy > T_fmy) > 0:  
         print('\nWARNING: The FMY of Dew Point is greater than the Dry Bulb ('+
-               str(sum(Tdew_fmy > T_fmy))+ ' values) for ' + CITY + '\n')
+               str(sum(Tdew_fmy > T_fmy))+ ' values) for ' + city_name + '\n')
     
     if sum(Rdiff_fmy > Rg_fmy) > 0:
         print('\nWARNING: The FMY of the diffuse horizontal irradiance is greater than the total global horizontal irradiance (' + 
-               str(sum(Rdiff_fmy > Rg_fmy))+ ' values) for ' + CITY + '')
+               str(sum(Rdiff_fmy > Rg_fmy))+ ' values) for ' + city_name + '')
         if sum(tfmy.Rdiff_tmy > tfmy.Rg_tmy) > 0:
             print('\nWARNING: This is a result of the TMY data where the diffuse horizontal irradiance is greater than the total global horizontal irradiance (' + 
-                  str(sum(tfmy.Rdiff_tmy > tfmy.Rg_tmy))+ ' values) for ' + CITY + '')
+                  str(sum(tfmy.Rdiff_tmy > tfmy.Rg_tmy))+ ' values) for ' + city_name + '')
             
     # Store the new variables in a data frame to export which will become a weather object...
     tfmy['T_fmy']       = T_fmy;

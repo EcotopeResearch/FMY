@@ -90,7 +90,7 @@ outputpath = "../output_FMY_all_models/"
 #    7. Havre (MT)
 #    8. Miles City (MT)
 stations    = [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ];
-stations    = [ 0, 4, 8 ]; 
+stations    = [  8 ]; 
 
 # Years to average over
 tmy3_years   = [ 1976, 2005 ]; # Years that the tmy3 weather files are taken from. This is the baseline time frame too.
@@ -105,9 +105,9 @@ future_years = [ 2020, 2049 ]; # Future years from 2006 - 2099.
 outformats = ['csv'];
 
 # Which Variables hourly plots
-hourly_plots = [0, 1, 2, 3, 5, 8];
+hourly_plots = [0, 1];
 
-suppress_all_plots = 1; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
+suppress_all_plots = 0; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
 
 #------------------------------------------------------------------------------
 #   MODEL/VAR/SCEN CHOICES
@@ -133,7 +133,7 @@ VARNAME =('tasmax','tasmin','rhsmax','rhsmin','pr','rsds','uas','vas','huss')
 #   7. Northward Wind Component (Not Supported)
 #   8. Specific Humidity
 variables         = [0, 1, 2, 3, 5, 8]
-var         = [ 0, 1 ]
+variables         = [ 0, 1 ]
 
 #------------------------------------------------------------------------------
 #   Experimental Method Options (Leave as is if you aren't sure)

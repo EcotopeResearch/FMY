@@ -227,7 +227,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Max / Min Temperature (degC)')
     
-                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Temperatures')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Temperatures')
                             plt.close()
                             
                         # Plot relative humidity
@@ -247,7 +247,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Max / Min Relative Humidity (%)')
     
-                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Relative_Humidity')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Relative_Humidity')
                             plt.close()
                         # Plot specific humidity
                         if vv == 8:
@@ -263,7 +263,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Specific Humidity (%)')
                             
-                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Specific_Humidity')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Specific_Humidity')
                             plt.close() 
                         # Plot Solar Terms
                         if vv == 5:
@@ -278,7 +278,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.grid() 
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Total Horizontal Radiation (Wh/m2)')
-                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Global_Radiation')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Global_Radiation')
                             plt.close() 
     
     ############################################################################
@@ -313,7 +313,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_ylabel(u'Max / Min Temperature (degC)')
                             plt.show()
                             
-                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Temperature')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Temperature')
                             plt.close()
                         # Plot Relative humidities
                         if vv == 3:
@@ -333,9 +333,9 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Max / Min Relative Humidity (%)')
                             
-                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Relative_Humidity')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Relative_Humidity')
                             plt.close()
-                        # Plot Solar Terms
+                        # Plot Specific
                         if vv == 8:
                             fig = plt.figure()
                             ax = fig.add_subplot(111)
@@ -350,7 +350,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Specific Humidity (%)')
                             
-                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Global_Radiation')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Global_Radiation')
                             plt.close()
                         # Plot Solar Terms
                         if vv == 5:
@@ -367,7 +367,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_ylabel(u'Total Horizontal Radiation (Wh/m2)')
                
                             
-                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Specific_Humidity')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Specific_Humidity')
                             plt.close()  
     
     
@@ -383,7 +383,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
         dfc0 = df.groupby(['station', 'month', 'model', 'scenario'])['tasmean'].agg(['mean']).reset_index()
         dfc0 = dfc0.rename(index=str, columns={"mean": 'tasmean'}) #Rename column from mean to variable name
         
-        dfc0['rhsmean'] = list( df.groupby(['station', 'month', 'model', 'scenario'])['rhsmean'].agg(['mean']).reset_index()['mean'] )
+      #  dfc0['rhsmean'] = list( df.groupby(['station', 'month', 'model', 'scenario'])['rhsmean'].agg(['mean']).reset_index()['mean'] )
         
         # Do rest of variables
         for vv in var:             
@@ -422,7 +422,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                                                   future_years,
                                                   mm, sc,
                                                   which_current_climate,
-                                                  graphpath, 
+                                                  graphpath, CITY[ss],
                                                   suppress_all_plots) ],
                                     axis = 1);
                 
