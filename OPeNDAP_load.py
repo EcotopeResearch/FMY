@@ -17,7 +17,7 @@ from datetime import datetime, date, timedelta
 from netCDF4 import Dataset
 import numpy as np
 import time
-from cfg import VARNAME, VARLONGNAME, MODELNAME, SCENNAME, YEAR_START, YEAR_END, RUN_NUM, DOMAIN
+from cfg import VARNAME, VARLONGNAME, MODELNAME, SCENNAME, YEAR_START, YEAR_END, RUN_NUM, DOMAIN, LAT_RANGE, LON_RANGE
 
 
 #################################################################################
@@ -108,12 +108,42 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
     #   FORM FILENAME AND GET HANDLE TO FILE AND LAT/LON 
     #--------------------------------------------------------
     Time=YEAR_START[scen]+'_'+YEAR_END[scen]
-    if daily == 1:
-        fileName = ('agg_macav2metdata_'+str(VARNAME[var])+'_'+str(MODELNAME[model])+'_r'+str(RUN_NUM[model])+'i1p1_'+str(SCENNAME[scen])+'_'+Time+'_'+DOMAIN+'_daily.nc')  
-    elif daily == 0:
-        fileName = ('agg_macav2metdata_'+str(VARNAME[var])+'_'+str(MODELNAME[model])+'_r'+str(RUN_NUM[model])+'i1p1_'+str(SCENNAME[scen])+'_'+Time+'_'+DOMAIN+'_monthly.nc')  
-
+    
+    # fileName = "agg_macav2metdata_rsds_MIROC5_r1i1p1_rcp85_2006_2099_CONUS_monthly.nc
+    # ?lat[0:1:584],lon[0:1:1385],crs[0:1:0],time[0:1:1127],surface_downwelling_shortwave_flux_in_air[0:1:1127][0:1:584][0:1:1385]"
+    # LAT_RANGE = [250, 584],
+    # LON_RANGE = [0, 550],
+    
+    if daily == 1: # Load the daily data
+        time_index = ['20453', '34332', '34332'];
+        
+        fileName = ('agg_macav2metdata_' + str(VARNAME[var]) + '_' + 
+                    str(MODELNAME[model]) + '_r' + str(RUN_NUM[model]) + 'i1p1_' +
+                    str(SCENNAME[scen]) + '_' + Time + '_' + DOMAIN + '_daily.nc?lat[' + 
+                    str(LAT_RANGE[0]) + ':1:' + str(LAT_RANGE[1]) +
+                    '],lon[' + str(LON_RANGE[0]) + ':1:' + str(LON_RANGE[1]) + 
+                    '],crs[0:1:0],time[0:1:' + time_index[scen] + '],'
+                    + VARLONGNAME[var] + '[0:1:' + time_index[scen] + '][' +
+                    str(LAT_RANGE[0]) + ':1:' + str(LAT_RANGE[1]) +
+                    '][' + str(LON_RANGE[0]) + ':1:' + str(LON_RANGE[1]) + ']' )
+                    
+    elif daily == 0: # Load the monthly data
+        time_index = ['671', '1127', '1127'];
+        
+        fileName = ( 'agg_macav2metdata_' + str(VARNAME[var]) + '_' + 
+                    str(MODELNAME[model]) + '_r' + str(RUN_NUM[model]) + 'i1p1_' +
+                    str(SCENNAME[scen]) + '_' + Time + '_' + DOMAIN + '_monthly.nc?lat[' + 
+                    str(LAT_RANGE[0]) + ':1:' + str(LAT_RANGE[1]) +
+                    '],lon[' + str(LON_RANGE[0]) + ':1:' + str(LON_RANGE[1]) + 
+                    '],crs[0:1:0],time[0:1:' + time_index[scen] + '],'
+                    + VARLONGNAME[var] + '[0:1:' + time_index[scen] + '][' +
+                    str(LAT_RANGE[0]) + ':1:' + str(LAT_RANGE[1]) +
+                    '][' + str(LON_RANGE[0]) + ':1:' + str(LON_RANGE[1]) + ']' )
+                    
+        
     fullfilename= dirPath+fileName
+
+    print('Loading... ' + fullfilename)
 
     # Sort data
     filehandle=Dataset(fullfilename,'r',format="NETCDF4")
@@ -122,8 +152,6 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
     timehandle=filehandle.variables['time']
     datahandle=filehandle.variables[VARLONGNAME[var]]
     
-    print('Loading... ' + fullfilename)
-     
     #=========================================================
     # get lat and lon in a usable form
     lat = lathandle[:]
@@ -137,9 +165,17 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
         lon_target  = lon_targets[ss]
         
         #=========================================================
+        # check the target is inbounds
+        if not (min(lat) <= lat_target <= max(lat)):
+            print('ERROR: The target station, number '+ ss +' is out of the lat bounds, consider changing the station or the index bounds in cfg.py')
+        if not (min(lon) <= lon_target <= max(lon)):
+            print('ERROR: The target station, number '+ ss +' is out of the lon bounds, consider changing the station or the index bounds in cfg.py')
+
+        #=========================================================
         #find indices of target lat/lon/day
         lat_index = (np.abs(lat-lat_target)).argmin()
         lon_index = (np.abs(lon-lon_target)).argmin()
+        
         #check final is in right bounds
         if(lat[lat_index]>lat_target):
         	if(lat_index!=0):
@@ -194,14 +230,15 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
     
     return(lst);
     
-    # import matplotlib.pyplot as plt;
-   # fig, ax0 = plt.subplots(1)
-   # im = ax0.pcolormesh(lon.data,lat.data,datahandle[2,lat_index,lon_index])
-   # fig.colorbar(im, ax=ax0)
-
-   # plt.xlim(235, 250)
-    #plt.ylim(40, 49)
-   # plt.show()
+#    import matplotlib.pyplot as plt;
+#    fig, ax0 = plt.subplots(1)
+#    im = ax0.pcolormesh(lon.data,lat.data,datahandle[2,:,:])
+#    im = ax0.pcolormesh(datahandle[2,:,:])
+#    fig.colorbar(im, ax=ax0)
+#
+#    plt.xlim(235, 250)
+#    plt.ylim(40, 49)
+#    plt.show()
    
 #=========================================================
 #=========================================================

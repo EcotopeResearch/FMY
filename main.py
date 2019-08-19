@@ -67,7 +67,8 @@ import importlib
 # Working directory, where the code lives.
 workingdir = 'R:/NPCC/2019_Future_Meteorological_Years (19-028-BL)/Python/FMY'
 
-# Path to local TMY data in .tm2 format
+# Path to local TMY data in .tm2 format 
+# File names are state_abbreviation_city_2or3.format, for example WASeattle3.tm2
 weatherpath = "E:/TMY2DATA/"; 
 
 # Output path for graphs
@@ -89,7 +90,7 @@ outputpath = "../output_FMY_all_models/"
 #    7. Havre (MT)
 #    8. Miles City (MT)
 stations    = [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ];
-#stations    = [ 0, 6 ]; 
+stations    = [ 0, 4, 8 ]; 
 
 # Years to average over
 tmy3_years   = [ 1976, 2005 ]; # Years that the tmy3 weather files are taken from. This is the baseline time frame too.
@@ -106,7 +107,7 @@ outformats = ['csv'];
 # Which Variables hourly plots
 hourly_plots = [0, 1, 2, 3, 5, 8];
 
-suppress_all_plots = 0; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
+suppress_all_plots = 1; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
 
 #------------------------------------------------------------------------------
 #   MODEL/VAR/SCEN CHOICES
@@ -115,12 +116,24 @@ suppress_all_plots = 0; #0 plots print to pdf which impeeds speed, 1 no plots ar
 # CCSM4 (4) and NorESM1-M (19) did not have relative humidity available at daily timescales.
 models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] # All complete sets
 #models      = [3, 4, 5, 6, 8, 9, 10, 11, 12, 15] #The RMJOC-II “10”. Note issues with model 4 in scenario=1
-#models      = [3] # for testing
+models      = [3,5] # for testing
 
 scenarios        = [ 2 ] # 1 is RCP4.5, 2 is RCP8.5
 
+VARNAME =('tasmax','tasmin','rhsmax','rhsmin','pr','rsds','uas','vas','huss')
+
+# Variables:
+#   0. Max Temperature
+#   1. Min Tempertuare
+#   2. Max Relative Humidity
+#   3. Min Relative HUmidity
+#   4. Precipitation (Not Supported)
+#   5. Surface Downwelling Shortwave Flux in Air 
+#   6. Eastward Wind Component (Not Supported)
+#   7. Northward Wind Component (Not Supported)
+#   8. Specific Humidity
 variables         = [0, 1, 2, 3, 5, 8]
-#var         = [ 0, 1 ]
+var         = [ 0, 1 ]
 
 #------------------------------------------------------------------------------
 #   Experimental Method Options (Leave as is if you aren't sure)
@@ -133,7 +146,7 @@ method      = 2; # 1 is NPCC,
 # Set to 'tmy' or 'gcm' to set which current climate is used to calculate the ajustments to the mean for            
 which_current_climate = 'gcm';
 
-interpolate_to_station = True
+interpolate_to_station = True;
 
 # 0 no correction / 1 is EDCDFm / 2 should be CDFm / 3 is linear Hawkins
 bias_correction_method = 0;
@@ -142,10 +155,10 @@ bias_correction_method = 0;
 #                           MAIN FUNCTION
 #==============================================================================
 
-def main( wpth,  gpth, opth, outfrmt, 
-                  stats, mods, scen, var, base_years, future_years,
-                  meth, which_cc, interp_to, 
-                  bias_correct, hrly_plts, supp_plts ):
+def main( wpth, gpth, opth, outfrmt, 
+                stats, mods, scen, var, base_years, future_years,
+                meth, which_cc, interp_to, 
+                bias_correct, hrly_plts, supp_plts ):
     
     from futureWeather import futureWeather;
     
@@ -174,10 +187,8 @@ def main( wpth,  gpth, opth, outfrmt,
                   stats, mods, scen, var, base_years, future_years,
                   meth, which_cc, interp_to, 
                   bias_correct, hrly_plts, supp_plts );
-      
-                  
-                  
-
+                       
+                 
 
 #==============================================================================
 #                           Code Below

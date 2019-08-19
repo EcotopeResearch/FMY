@@ -13,7 +13,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
     import matplotlib.pyplot as plt;
     import seaborn as sns;
     
-    from cfg import METHODNAMES, VARNAME, MODELNAME, SCENNAME,HRS_IN_YEAR;
+    from cfg import METHODNAMES, VARNAME, MODELNAME, SCENNAME,HRS_IN_YEAR, CITY;
     
     from OPeNDAP_load import get_data;
     from month_conversions import get_monthly_mmms;
@@ -29,10 +29,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
     #--------------------------------------------------------
     #   Initialize things.
     #--------------------------------------------------------
-    
-    # List of cities
-    city        = [ "WASeattle3", "ORCorvallis3", "IDBoise3", "ORRedmond3", "NVElko3",
-                   "IDBurley3", "IDSodaSprings3", "MTHavre3", "MTMilesCity3" ];
+  
                    
     # Get the indexs for talking to the station list
     station_inds = list(range(0,len(stations)))
@@ -71,7 +68,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
     # Get tmy weather file
     tmy = [0] * len(station_inds);
     for ss in station_inds:
-        tmy[ss] = weather(weatherpath, city[stations[ss]]);
+        tmy[ss] = weather(weatherpath, CITY[stations[ss]]);
         tmy[ss].get_weather();
         
         dft = pd.concat( [ dft, tmy[ss].write_to_monthly_df(stations[ss], daily_max) ],  axis=0); #Stack stations on top of each other.
@@ -79,7 +76,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
         LAT_TARGETS[ss] = tmy[ss].lat;
         LON_TARGETS[ss] = tmy[ss].lon;
         
-        print('Loaded TMY dataset of ' + city[ss] + '.\n')
+        print('Loaded TMY dataset of ' + CITY[ss] + '.\n')
     
     print('Loading GCM data...')
     # Get historical data, scenario = 0
@@ -217,7 +214,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                         # Plot temperatures
                         if vv == 1:
                             fig = plt.figure()
-                            fig.suptitle('Historical Monthly Max and Min Temperatures for \n'+ city[ss] + ' for ' + 
+                            fig.suptitle('Historical Monthly Max and Min Temperatures for \n'+ CITY[ss] + ' for ' + 
                                  MODELNAME[mm] + ' from ' + str(tmy3_years[0]) +' - ' + 
                                  str(tmy3_years[1]) + '\n running scenario: ' + SCENNAME[sc])
                             ax = fig.add_subplot(111)
@@ -230,13 +227,13 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Max / Min Temperature (degC)')
     
-                            fig.savefig(graphpath + city[ss] + '/' + city[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Temperatures')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Temperatures')
                             plt.close()
                             
                         # Plot relative humidity
                         if vv == 3:
                             fig = plt.figure()
-                            fig.suptitle('Historical Monthly Max and Min Relative Humidity for\n'+ city[ss]+ ' for ' + 
+                            fig.suptitle('Historical Monthly Max and Min Relative Humidity for\n'+ CITY[ss]+ ' for ' + 
                                  MODELNAME[mm] + ' from ' + str(tmy3_years[0]) +' - ' + 
                                  str(tmy3_years[1]) + '\n running scenario: ' + SCENNAME[sc])
                             ax = fig.add_subplot(111)
@@ -250,12 +247,12 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Max / Min Relative Humidity (%)')
     
-                            fig.savefig(graphpath + city[ss] + '/' + city[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Relative_Humidity')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Relative_Humidity')
                             plt.close()
                         # Plot specific humidity
                         if vv == 8:
                             fig = plt.figure()
-                            fig.suptitle('Historical Monthly Specific Humidity for\n'+ city[ss]+ ' for ' + 
+                            fig.suptitle('Historical Monthly Specific Humidity for\n'+ CITY[ss]+ ' for ' + 
                                  MODELNAME[mm] + ' from ' + str(tmy3_years[0]) +' - ' + 
                                  str(tmy3_years[1]) + '\n running scenario: ' + SCENNAME[sc])
                             ax = fig.add_subplot(111)
@@ -266,12 +263,12 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Specific Humidity (%)')
                             
-                            fig.savefig(graphpath + city[ss] + '/' + city[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Specific_Humidity')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Specific_Humidity')
                             plt.close() 
                         # Plot Solar Terms
                         if vv == 5:
                             fig = plt.figure()
-                            fig.suptitle('Historical Monthly Total Horizontal Radiation for\n'+ city[ss]+ ' for ' + 
+                            fig.suptitle('Historical Monthly Total Horizontal Radiation for\n'+ CITY[ss]+ ' for ' + 
                                  MODELNAME[mm] + ' from ' + str(tmy3_years[0]) +' - ' + 
                                  str(tmy3_years[1]) + '\n running scenario: ' + SCENNAME[sc])
                             ax = fig.add_subplot(111)
@@ -281,7 +278,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.grid() 
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Total Horizontal Radiation (Wh/m2)')
-                            fig.savefig(graphpath + city[ss] + '/' + city[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Global_Radiation')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Historical_Monthly_Mean_of_Global_Radiation')
                             plt.close() 
     
     ############################################################################
@@ -297,7 +294,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                         #Plot Temperatures
                         if vv == 1:
                             fig = plt.figure()
-                            fig.suptitle('Future Monthly Max and Min Temperatures for \n'+ city[ss]+ ' for ' + 
+                            fig.suptitle('Future Monthly Max and Min Temperatures for \n'+ CITY[ss]+ ' for ' + 
                                          MODELNAME[mm] + ' from ' + str(future_years[0]) +' - ' + 
                                          str(future_years[1]) + '\n running scenario: ' + SCENNAME[sc])
                             ax = fig.add_subplot(111)
@@ -316,13 +313,13 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_ylabel(u'Max / Min Temperature (degC)')
                             plt.show()
                             
-                            fig.savefig(graphpath + city[ss] + '/' + city[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Temperature')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Temperature')
                             plt.close()
                         # Plot Relative humidities
                         if vv == 3:
                             fig = plt.figure()
                             ax = fig.add_subplot(111)
-                            fig.suptitle('Future Monthly Max and Min Relative Humidity for\n'+ city[ss]+ ' for ' + 
+                            fig.suptitle('Future Monthly Max and Min Relative Humidity for\n'+ CITY[ss]+ ' for ' + 
                                          MODELNAME[mm] + ' from ' + str(future_years[0]) +' - ' + 
                                          str(future_years[1]) + '\n running scenario: ' + SCENNAME[sc])
                             sns.set(style="ticks")
@@ -336,13 +333,13 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Max / Min Relative Humidity (%)')
                             
-                            fig.savefig(graphpath + city[ss] + '/' + city[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Relative_Humidity')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Relative_Humidity')
                             plt.close()
                         # Plot Solar Terms
                         if vv == 8:
                             fig = plt.figure()
                             ax = fig.add_subplot(111)
-                            fig.suptitle('Future Monthly Specific Humidity for\n'+ city[ss]+ ' for ' + 
+                            fig.suptitle('Future Monthly Specific Humidity for\n'+ CITY[ss]+ ' for ' + 
                                          MODELNAME[mm] + ' from ' + str(future_years[0]) +' - ' + 
                                          str(future_years[1]) + '\n running scenario: ' + SCENNAME[sc])
                             sns.set(style="ticks")
@@ -353,12 +350,12 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Specific Humidity (%)')
                             
-                            fig.savefig(graphpath + city[ss] + '/' + city[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Global_Radiation')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Global_Radiation')
                             plt.close()
                         # Plot Solar Terms
                         if vv == 5:
                             fig = plt.figure()
-                            fig.suptitle('Future Monthly Total Horizontal Radiation for\n'+ city[ss]+ ' for ' + 
+                            fig.suptitle('Future Monthly Total Horizontal Radiation for\n'+ CITY[ss]+ ' for ' + 
                                  MODELNAME[mm] + ' from ' + str(future_years[0]) +' - ' + 
                                  str(future_years[1]) + '\n running scenario: ' + SCENNAME[sc])
                             ax = fig.add_subplot(111)
@@ -370,7 +367,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_ylabel(u'Total Horizontal Radiation (Wh/m2)')
                
                             
-                            fig.savefig(graphpath + city[ss] + '/' + city[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Specific_Humidity')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Specific_Humidity')
                             plt.close()  
     
     
@@ -406,7 +403,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
             for sc in scen:
     
                 # Initialize new data frame for hourly
-                tempdf = pd.DataFrame({'station'    : [city[ss]] * HRS_IN_YEAR, 
+                tempdf = pd.DataFrame({'station'    : [CITY[ss]] * HRS_IN_YEAR, 
                                        'model'      : [MODELNAME[mm]] * HRS_IN_YEAR,
                                        'scenario'   : [SCENNAME[sc]] * HRS_IN_YEAR,
                                        'hoy'        : tmy[stations.index(ss)].hoy,
@@ -422,8 +419,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                                                   dfam[(dfam.station == ss) & (dfam.model == mm) & (dfam.scenario == sc)].reset_index(drop = True), 
                                                   df1[(df1.station == ss) & (df1.model == mm) & (df1.scenario == sc)].reset_index(drop = True),
                                                   hourly_plots, 
-                                                  future_years, 
-                                                  city[ss],
+                                                  future_years,
                                                   mm, sc,
                                                   which_current_climate,
                                                   graphpath, 
@@ -434,13 +430,13 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                 df_fmy = pd.concat([df_fmy, tempdf], axis = 0);
                 
                 if 'csv' in outformats:
-                    tempdf.to_csv(outputpath + 'FMY_' + city[ss] + '_' + MODELNAME[mm] +
+                    tempdf.to_csv(outputpath + 'FMY_' + CITY[ss] + '_' + MODELNAME[mm] +
                               '_' +  SCENNAME[sc] + '_' + METHODNAMES[method-1] +
                               '_' + which_current_climate + '.csv')
     
                 if 'tmy2' in outformats or 'tmy3' in outformats:
                     #Write to fmy
-                    fmy = weather(weatherpath, city[ss]);
+                    fmy = weather(weatherpath, CITY[ss]);
                     fmy.get_weather();
                     fmy.tdry    = tempdf.T_fmy;
                     fmy.tdew    = tempdf.Tdew_fmy;
