@@ -6,7 +6,7 @@ Created on Mon Aug  5 09:20:27 2019
 """
 
 from cfg import MODELNAME, SCENNAME, METHODNAMES, MONTHS_IN_YEAR;
-from variable_conversions import months2hrs;
+from month_conversions import months2hrs;
 
 import numpy as np;
 import pandas as pd;
@@ -19,8 +19,8 @@ from metpy.units import units
 ###############################################################################
 
 def adjust_to_fmy(var, methods, tmy, dft, dfam, df1, 
-                  hr_plots, ftr_yr, city_name, mm, sc, 
-                  cc0, graphdir, suppress_plts):
+                  hr_plots, ftr_yr, mm, sc, 
+                  cc0, graphdir, city_name, suppress_plts):
     """
     Function for adjusting variables from tmy to fmy, which uses various methods 
     for the different variables specified in methods. 
@@ -34,7 +34,6 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
     # Variables for plotting:
     # hr_plots - a list of variables to be plotted hourly for each month
     # ftr_yr - a list of starting and ending years of interest for the GCM
-    # city_name - the name of the city being plotted
     # mm - the model number
     # sc - the scenario number
     # cc0 - which current climate is used
@@ -110,7 +109,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + city_name+ '/' + city_name+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Temperatures_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' + city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Temperatures_for_Month_'+ str(ii))
             plt.close()  
 
     ########################################################################### 
@@ -132,7 +131,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Relative_Humidity_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Relative_Humidity_for_Month_'+ str(ii))
             plt.close() 
     ###########################################################################
     #Dew Point Plots
@@ -153,7 +152,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_DewPoint_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_DewPoint_for_Month_'+ str(ii))
             plt.close() 
     ###########################################################################
     # Total Global Solar Plots
@@ -174,7 +173,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Total_Horizontal_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Total_Horizontal_for_Month_'+ str(ii))
             plt.close() 
 
             # Direct Normal, dirnorm
@@ -192,7 +191,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Direct_Normal_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Direct_Normal_for_Month_'+ str(ii))
             plt.close() 
 
             #Diffuse Horizontal, difhor
@@ -210,7 +209,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
             ax.grid()
             #plt.show()
             
-            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Diffuse_Horizontal_for_Month_'+ str(ii))
+            fig.savefig(graphdir + city_name+ '/' +city_name+'_'+MODELNAME[mm]+'_'+METHODNAMES[methods-1]+'_Baseline_'+cc0+'_Transformed_Hourly_TMY_Diffuse_Horizontal_for_Month_'+ str(ii))
             plt.close() 
             
     #=========================================================

@@ -45,5 +45,14 @@ MONTHS_IN_YEAR = 12;
 #               Other Variables
 #=========================================================
 
-METHODNAMES = ('NPCC', 'Belcher', 'NPCC_Adjusted')
+# Range of the latitude and longitude that are imported from OPeNDAP
+LAT_RANGE = [250, 584];
+LON_RANGE = [0, 550];
+    
+    
+METHODNAMES = ('NPCC', 'Belcher', 'NPCCAdjusted');
 
+  
+# List of cities for NPCC project, with names of tmy3 files in .tmy2 format
+CITY = [ "WASeattle3", "ORCorvallis3", "IDBoise3", "ORRedmond3", "NVElko3",
+               "IDBurley3", "IDSodaSprings3", "MTHavre3", "MTMilesCity3" ];
