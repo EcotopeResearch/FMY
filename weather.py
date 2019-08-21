@@ -59,8 +59,8 @@ class weather:
         self.dirnorm    = np.array([0.0] * HRS_IN_YEAR); #Direct normal solar
         self.difhor     = np.array([0.0] * HRS_IN_YEAR); #Diffuse Horizontal Solar
         
-       # self.wind_speed = np.array([0.0] * HRS_IN_YEAR); #windspeed m/s
-       # self.wind_dir   = np.array([0.0] * HRS_IN_YEAR); #wind direction azimuth
+        self.wind_speed = np.array([0.0] * HRS_IN_YEAR); #windspeed m/s
+        self.wind_dir   = np.array([0.0] * HRS_IN_YEAR); #wind direction azimuth
             
        # self.cloud      = np.array([0.0] * HRS_IN_YEAR); #Could cover fraction
         
@@ -96,8 +96,8 @@ class weather:
                 self.tdew[ind]         = float(line[73:77]) * 0.1;		#tdew (deg C) to conform with TB code
     
                 self.press[ind]        = float(line[84:88]);			#atmospheric pressure (mbar) mb = 100 Pascals
-                #self.wind_speed[ind]   = float(line[95:98]) * 0.1;		#windspeed m/s
-                #self.wind_dir[ind]     = float(line[90:93]);   			#wind direction azimuth
+                self.wind_speed[ind]   = float(line[95:98]) * 0.1;		#windspeed m/s
+                self.wind_dir[ind]     = float(line[90:93]);   			#wind direction azimuth
                 
                 #self.cloud[ind]        = float(line[59:61])/10.0;		    #Could cover fraction
                 #wd.ocloud       = getint(line,63,2)/10.0;		        #Opaque cloud cover fraction
@@ -146,8 +146,8 @@ class weather:
                 self.tdew[ind]         = float(line[34]);		#tdew (deg C) to conform with TB code
     
                 self.press[ind]        = float(line[41]);			#atmospheric pressure (mbar) mb = 100 Pascals
-                #self.wind_speed[ind]   = float(line[95:98]) * 0.1;		#windspeed m/s
-                #self.wind_dir[ind]     = float(line[90:93]);   			#wind direction azimuth
+                self.wind_speed[ind]   = float(line[95:98]) * 0.1;		#windspeed m/s
+                self.wind_dir[ind]     = float(line[90:93]);   			#wind direction azimuth
                 
                 #self.cloud[ind]        = float(line[59:61])/10.0;		    #Could cover fraction
                 #wd.ocloud       = getint(line,63,2)/10.0;		        #Opaque cloud cover fraction
