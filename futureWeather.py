@@ -2,10 +2,11 @@
 
 
 
-def futureWeather( weatherpath,  graphpath, outputpath, outformats, 
+def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, load_tmy23, 
                   stations, models, scen, var, tmy3_years, future_years,
                   method, which_current_climate, interpolate_to_station, 
-                  bias_correction_method, hourly_plots, suppress_all_plots ):
+                  bias_correction_method, hourly_plots, suppress_all_plots,
+                  download_data):
  
     #=========================================================
     import numpy as np;
@@ -68,7 +69,7 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
     # Get tmy weather file
     tmy = [0] * len(station_inds);
     for ss in station_inds:
-        tmy[ss] = weather(weatherpath, CITY[stations[ss]]);
+        tmy[ss] = weather(weatherpath, CITY[stations[ss]], load_tmy23);
         tmy[ss].get_weather();
         
         dft = pd.concat( [ dft, tmy[ss].write_to_monthly_df(stations[ss], daily_max) ],  axis=0); #Stack stations on top of each other.
@@ -78,15 +79,21 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
         
         print('Loaded TMY dataset of ' + CITY[ss] + '.\n')
     
+    
     print('Loading GCM data...')
+    
     # Get historical data, scenario = 0
-    dfhist = get_data(df, [0], var, models, LAT_TARGETS, LON_TARGETS, stations, daily, interpolate_to_station);
+    dfhist = get_data(df, [0], var, models, LAT_TARGETS, LON_TARGETS, stations, 
+                      datapath, 
+                      daily, interpolate_to_station, 
+                      download_data);
     
     # and get future data for a scenario specified above
-    dffut = get_data(df1, scen ,var, models, LAT_TARGETS, LON_TARGETS, stations, daily, interpolate_to_station);
-    
-    #scatter_matrix(df)
-    #plt.show()
+    dffut = get_data(df1, scen ,var, models, LAT_TARGETS, LON_TARGETS, stations, 
+                     datapath, 
+                     daily, interpolate_to_station,
+                     download_data);
+                     
     
     #=========================================================
     #               Cut data to study "area"
@@ -350,7 +357,9 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_xlabel(u'Month')
                             ax.set_ylabel(u'Specific Humidity (%)')
                             
-                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Global_Radiation')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+
+                                        MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+
+                                        which_current_climate+'_Future_Monthly_Mean_of_Specific_Humidity')
                             plt.close()
                         # Plot Solar Terms
                         if vv == 5:
@@ -367,7 +376,9 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
                             ax.set_ylabel(u'Total Horizontal Radiation (Wh/m2)')
                
                             
-                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+which_current_climate+'_Future_Monthly_Mean_of_Specific_Humidity')
+                            fig.savefig(graphpath + CITY[ss] + '/' + CITY[ss]+'_'+
+                                        MODELNAME[mm]+'_'+METHODNAMES[method-1]+'_Baseline_'+
+                                        which_current_climate+'_Future_Monthly_Mean_of_Global_Radiation')
                             plt.close()  
     
     
@@ -383,12 +394,15 @@ def futureWeather( weatherpath,  graphpath, outputpath, outformats,
         dfc0 = df.groupby(['station', 'month', 'model', 'scenario'])['tasmean'].agg(['mean']).reset_index()
         dfc0 = dfc0.rename(index=str, columns={"mean": 'tasmean'}) #Rename column from mean to variable name
         
-      #  dfc0['rhsmean'] = list( df.groupby(['station', 'month', 'model', 'scenario'])['rhsmean'].agg(['mean']).reset_index()['mean'] )
+        dfc0['rhsmean'] = list( df.groupby(['station', 'month', 'model', 'scenario'])['rhsmean'].agg(['mean']).reset_index()['mean'] )
         
+        #dfc0 = df.groupby(['station', 'month', 'model', 'scenario'])['rhsmean'].agg(['mean']).reset_index()
+        #dfc0 = dfc0.rename(index=str, columns={"mean": 'rhsmean'}) #Rename column from mean to variable name
+      
         # Do rest of variables
         for vv in var:             
             # Grab the monthly means of a variable and put it into dataframe 
-            dfc0[VARNAME[vv]] = list( df.groupby(['station', 'month', 'model', 'scenario'])[VARNAME[vv]].agg(['mean']).reset_index()['mean'] )
+            dfc0[VARNAME[vv]] = list( df.groupby(['station', 'month', 'model', 'scenario'])[VARNAME[vv]+'_c'].agg(['mean']).reset_index()['mean'] )
     else: 
         print('\nWARNING: which_current_climate is ,' + which_current_climate + ' should be set to ''tmy'' or ''gcm''. Defaulting to tmy.\n')
         dfc0 = dft;

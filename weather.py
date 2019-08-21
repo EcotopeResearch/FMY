@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jul  1 16:50:29 2019
-weather!
+Weather Class for reading and writing TMY2 and TMY3 formatted files.
 
-
-@author: paul
+Note you will need the TMY2/3 file that you want to convert to FMY, to read and
+to write to FMY. 
 """
-from cfg import HRS_IN_MONTH, HRS_IN_YEAR, DAYS_IN_MONTH, DAYS_IN_YEAR, MONTHS_IN_YEAR
+from cfg import HRS_IN_MONTH, HRS_IN_YEAR, DAYS_IN_MONTH, DAYS_IN_YEAR, MONTHS_IN_YEAR, TMY3NUMBER, TMY2EXT, TMY3EXT,CITY
 import numpy as np;
 import pandas as pd;
 import metpy.calc as mpcalc
@@ -15,9 +14,18 @@ from metpy.units import units
 #Should I bother to initialize everything to length 8760? it'll run faster but...
 class weather:
     
-    def __init__(self, weatherpath, city):
+    def __init__(self, weatherpath, city, tmy23):
         self.city = city;
         self.weatherpath = weatherpath;
+        
+        if tmy23 == 2:
+            self.file_ext = TMY2EXT;
+        elif tmy23 == 3:
+            self.file_ext = TMY3EXT;
+        else:
+            print('Invalid TMY Data type chosen, should be 2 or 3, you choose '
+                  + str(tmy23) +'. Defaulting to tmy2 format');
+            self.file_ext = '.tm2';
         
         self.lon        = 0.0;
         self.lat        = 0.0;
@@ -61,49 +69,105 @@ class weather:
 
     def get_weather(self):
         
-        f = open(self.weatherpath+self.city+".tm2",'r');
+        #filename = TMY3NUMBER[ CITY == self.city ];
+        f = open(self.weatherpath+self.city+self.file_ext,'r');
         
-        # Header read for lat and lon
-        head = f.readline();
-        self.lat = int(head[39:41]) + int(head[42:44])/60.0;
-        self.lon = int(head[47:50]) + int(head[51:53])/60.0;
+        #------------------------------------------------------
+        #------------------------------------------------------
+        # Load TMY2
+        if self.file_ext == TMY2EXT:
         
-        line = f.readline()
-        ind = 0;
-        while line:
+            # Header read for lat and lon
+            head = f.readline();
+            self.lat = int(head[39:41]) + int(head[42:44])/60.0;
+            self.lon = int(head[47:50]) + int(head[51:53])/60.0;
             
-            # Process the line
-            self.tothor[ind]       = float(line[17:21])             #Total horizontal solar Wh/m2
-            self.dirnorm[ind]      = float(line[23:27])             #Direct normal solar Wh/m2
-            self.difhor[ind]       = float(line[29:33])	            #Diffuse Horizontal Solar Wh/m2
+            line = f.readline()
+            ind = 0;
+            while line:
+                
+                # Process the line
+                self.tothor[ind]       = float(line[17:21])             #Total horizontal solar Wh/m2
+                self.dirnorm[ind]      = float(line[23:27])             #Direct normal solar Wh/m2
+                self.difhor[ind]       = float(line[29:33])	            #Diffuse Horizontal Solar Wh/m2
+                
+                self.tdry[ind]         = float(line[67:71]) * 0.1;	    #tdrybulb (deg C)
+                self.rhs[ind]          = float(line[79:82]) * 0.01;		#relative humidity (%)
+                self.tdew[ind]         = float(line[73:77]) * 0.1;		#tdew (deg C) to conform with TB code
+    
+                self.press[ind]        = float(line[84:88]);			#atmospheric pressure (mbar) mb = 100 Pascals
+                #self.wind_speed[ind]   = float(line[95:98]) * 0.1;		#windspeed m/s
+                #self.wind_dir[ind]     = float(line[90:93]);   			#wind direction azimuth
+                
+                #self.cloud[ind]        = float(line[59:61])/10.0;		    #Could cover fraction
+                #wd.ocloud       = getint(line,63,2)/10.0;		        #Opaque cloud cover fraction
+                #wd.ceilht       = getint(line,106,5);		            #Cloud ceiling height m
+                
+                # Calculate specfic humidity from dry bulb, dew point, and atm pressure using MetPy
+                self.huss[ind] = mpcalc.specific_humidity_from_mixing_ratio(
+                                    mpcalc.mixing_ratio_from_relative_humidity(
+                                            mpcalc.relative_humidity_from_dewpoint(
+                                                    self.tdry[ind] * units.degC, 
+                                                    self.tdew[ind] * units.degC), 
+                                             self.tdry[ind]  * units.degC,
+                                             self.press[ind]  * units.mbar)
+                                            )
+                
+                #Next line
+                line = f.readline();
+                ind = ind + 1;
+    
+            f.close();
             
-            self.tdry[ind]         = float(line[67:71]) * 0.1;	    #tdrybulb (deg C)
-            self.rhs[ind]          = float(line[79:82]) * 0.01;		#relative humidity (%)
-            self.tdew[ind]         = float(line[73:77]) * 0.1;		#tdew (deg C) to conform with TB code
-
-            self.press[ind]        = float(line[84:88]);			#atmospheric pressure (mbar) mb = 100 Pascals
-            #self.wind_speed[ind]   = float(line[95:98]) * 0.1;		#windspeed m/s
-            #self.wind_dir[ind]     = float(line[90:93]);   			#wind direction azimuth
+        #------------------------------------------------------
+        #------------------------------------------------------
+        # Load TMY3
+        elif self.file_ext == TMY3EXT:
+        #f = open('C:/Users/paul/Documents/TMY/727930TYA.CSV','r')
+            # Header read for lat and lon
+            head = f.readline().split(',');
+            self.lat = float(head[4]) ;
+            self.lon = float(head[5]) ;
             
-            #self.cloud[ind]        = float(line[59:61])/10.0;		    #Could cover fraction
-            #wd.ocloud       = getint(line,63,2)/10.0;		        #Opaque cloud cover fraction
-            #wd.ceilht       = getint(line,106,5);		            #Cloud ceiling height m
+            #Burn a line for the second part of the header.
+            line = f.readline() 
             
-            # Calculate specfic humidity from dry bulb, dew point, and atm pressure using MetPy
-            self.huss[ind] = mpcalc.specific_humidity_from_mixing_ratio(
-                                mpcalc.mixing_ratio_from_relative_humidity(
-                                        mpcalc.relative_humidity_from_dewpoint(
-                                                self.tdry[ind] * units.degC, 
-                                                self.tdew[ind] * units.degC), 
-                                         self.tdry[ind]  * units.degC,
-                                         self.press[ind]  * units.mbar)
-                                        )
-            
-            #Next line
-            line = f.readline();
-            ind = ind + 1;
-
-        f.close();
+            line = f.readline().split(','); 
+            ind = 0;
+            while line:
+                
+                # Process the line
+                self.tothor[ind]       = float(line[4])             #Total horizontal solar Wh/m2
+                self.dirnorm[ind]      = float(line[7])             #Direct normal solar Wh/m2
+                self.difhor[ind]       = float(line[10])	            #Diffuse Horizontal Solar Wh/m2
+                
+                self.tdry[ind]         = float(line[31]);	    #tdrybulb (deg C)
+                self.rhs[ind]          = float(line[37]) * 0.01;		#relative humidity (%)
+                self.tdew[ind]         = float(line[34]);		#tdew (deg C) to conform with TB code
+    
+                self.press[ind]        = float(line[41]);			#atmospheric pressure (mbar) mb = 100 Pascals
+                #self.wind_speed[ind]   = float(line[95:98]) * 0.1;		#windspeed m/s
+                #self.wind_dir[ind]     = float(line[90:93]);   			#wind direction azimuth
+                
+                #self.cloud[ind]        = float(line[59:61])/10.0;		    #Could cover fraction
+                #wd.ocloud       = getint(line,63,2)/10.0;		        #Opaque cloud cover fraction
+                #wd.ceilht       = getint(line,106,5);		            #Cloud ceiling height m
+                
+                # Calculate specfic humidity from dry bulb, dew point, and atm pressure using MetPy
+                self.huss[ind] = mpcalc.specific_humidity_from_mixing_ratio(
+                                    mpcalc.mixing_ratio_from_relative_humidity(
+                                            mpcalc.relative_humidity_from_dewpoint(
+                                                    self.tdry[ind] * units.degC, 
+                                                    self.tdew[ind] * units.degC), 
+                                             self.tdry[ind]  * units.degC,
+                                             self.press[ind]  * units.mbar)
+                                            )
+                
+                #Next line
+                line = f.readline().split(',');
+                ind = ind + 1;
+    
+            f.close();
 
 ###############################################################################
 
@@ -273,7 +337,15 @@ class weather:
         ax.plot(np.array(self.hoy)/8760*12+1, var,'-')
         plt.xticks(list(range(0,13)))
         plt.show()
-
+###############################################################################
+        
+    def write_tmy_file(self, outdir, modelname, scenname):
+        
+        if self.file_ext == TMY2EXT:
+            self.write_tmy2( outdir, modelname, scenname)
+        elif self.file_ext == TMY3EXT:
+            self.write_tmy3( outdir, modelname, scenname)
+            
 ###############################################################################
 
     def check_tmy2_limits(self):
@@ -296,14 +368,14 @@ class weather:
         self.dirnorm = [max(min(x, tmy2_dir[1]), tmy2_dir[0]) for x in self.dirnorm] 
         self.difhor  = [max(min(x, tmy2_dif[1]), tmy2_dif[0]) for x in self.difhor] 
         
-###############################################################################
 
+###############################################################################
     def write_tmy2(self, outdir, modelname, scenname):
         
         self.check_tmy2_limits();
         
-        f = open(self.weatherpath+self.city+".tm2",'r');
-        g = open(outdir + self.city + "_future_" + modelname + "_" + scenname +".tm2",'w+');
+        f = open(self.weatherpath+self.city+self.file_ext,'r');
+        g = open(outdir + self.city + "_future_" + modelname + "_" + scenname + self.file_ext,'w+');
 
         #####################
         # Write the header verbatum
@@ -342,3 +414,49 @@ class weather:
 
         f.close();
         g.close();
+        
+###############################################################################
+
+    def write_tmy3(self, outdir, modelname, scenname):
+                
+        f = open(self.weatherpath+self.city+self.file_ext,'r');
+        g = open(outdir + self.city + "_future_" + modelname + "_" + scenname + self.file_ext,'w+');
+
+        #####################
+        # Write the header lines verbatum
+        head = f.readline();
+        g.write(head);
+        
+        head = f.readline();
+        g.write(head);
+        
+        ######################
+        line = f.readline().split(',');
+        ind = 0;
+        while line:
+    
+            # tdrybulb (deg C)
+            line[31]               = str(self.tdry[ind]);
+            # relative humidity (%)
+            line[37]               = str(self.rhs[ind] * 100); 
+            # tdew (deg C) to conform with TB code
+            line[34]               = str(self.tdew[ind]); 
+            
+            # Total horizontal solar Wh/m2
+            line[4]               = str(self.tothor[ind]);
+            # Direct normal solar Wh/m2
+            line[7]               = str(self.dirnorm[ind]);
+            # Diffuse Horizontal Solar Wh/m2
+            line[10]              = str(self.difhor[ind]); 
+
+            # Write line
+            g.write(','.join(line));
+            
+            # Next line
+            line = f.readline();
+            ind = ind + 1;
+
+        f.close();
+        g.close();
+        
+
