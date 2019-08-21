@@ -396,13 +396,13 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
         
         dfc0['rhsmean'] = list( df.groupby(['station', 'month', 'model', 'scenario'])['rhsmean'].agg(['mean']).reset_index()['mean'] )
         
-        dfc0 = df.groupby(['station', 'month', 'model', 'scenario'])['rhsmean'].agg(['mean']).reset_index()
-        dfc0 = dfc0.rename(index=str, columns={"mean": 'tasmean'}) #Rename column from mean to variable name
+        #dfc0 = df.groupby(['station', 'month', 'model', 'scenario'])['rhsmean'].agg(['mean']).reset_index()
+        #dfc0 = dfc0.rename(index=str, columns={"mean": 'rhsmean'}) #Rename column from mean to variable name
       
         # Do rest of variables
         for vv in var:             
             # Grab the monthly means of a variable and put it into dataframe 
-            dfc0[VARNAME[vv]] = list( df.groupby(['station', 'month', 'model', 'scenario'])[VARNAME[vv]].agg(['mean']).reset_index()['mean'] )
+            dfc0[VARNAME[vv]] = list( df.groupby(['station', 'month', 'model', 'scenario'])[VARNAME[vv]+'_c'].agg(['mean']).reset_index()['mean'] )
     else: 
         print('\nWARNING: which_current_climate is ,' + which_current_climate + ' should be set to ''tmy'' or ''gcm''. Defaulting to tmy.\n')
         dfc0 = dft;
