@@ -56,3 +56,10 @@ METHODNAMES = ('NPCC', 'Belcher', 'NPCCAdjusted');
 # List of cities for NPCC project, with names of tmy3 files in .tmy2 format
 CITY = [ "WASeattle3", "ORCorvallis3", "IDBoise3", "ORRedmond3", "NVElko3",
                "IDBurley3", "IDSodaSprings3", "MTHavre3", "MTMilesCity3" ];
+
+TMY3NUMBER = ["727930", "726945", "726810", "726835", "725825", "725867", "725868", "727770", "742300" ] 
+TMY2EXT = '.tm2'
+TMY3EXT = 'TYA.CSV'
+
+
+
