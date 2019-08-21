@@ -1,8 +1,3 @@
-"""
-Created on Wed Aug 14 16:42:45 2019
-
-@author: paul
-"""
 
 """
 #Author:	Paul Kintner
@@ -69,14 +64,18 @@ workingdir = 'R:/NPCC/2019_Future_Meteorological_Years (19-028-BL)/Python/FMY'
 
 # Path to local TMY data in .tm2 format 
 # File names are state_abbreviation_city_2or3.format, for example WASeattle3.tm2
-weatherpath = "E:/TMY2DATA/"; 
+weatherpath = 'C:/Users/paul/Documents/TMY/';# "E:/TMY2DATA/"; 
 
 # Output path for graphs
-graphpath = "../Graphs_FMY_all_models/";      
+graphpath = "./Graphs_FMY_all_models/";      
+
+# Data path for GCM data if download_data = True
+datapath = "C:/Users/paul/Documents/tmy2/GCM_Data/";
 
 # Output path for future .tm2 and .tm3 files
-outputpath = "../output_FMY_all_models/"  
+outputpath = "./output_FMY_all_models/"  
 
+load_tmy23 = 2; #Input files are in (2) tmy2 fromat or (3) tmy3 format
 
 #------------------------------------------------------------------------------
 # Set Cities: 
@@ -90,38 +89,28 @@ outputpath = "../output_FMY_all_models/"
 #    7. Havre (MT)
 #    8. Miles City (MT)
 stations    = [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ];
-stations    = [  8 ]; 
+#stations    = [  0 ]; 
 
 # Years to average over
 tmy3_years   = [ 1976, 2005 ]; # Years that the tmy3 weather files are taken from. This is the baseline time frame too.
 future_years = [ 2020, 2049 ]; # Future years from 2006 - 2099.
 
-#------------------------------------------------------------------------------
-#   Output formats
-#------------------------------------------------------------------------------
-
-# FMY output formats, will print to csv, tmy2, and tmy3. Is a list of strings,
-#  containing ['csv','tmy2', 'tmy3'], and any combination of them or none.
-outformats = ['csv'];
-
-# Which Variables hourly plots
-hourly_plots = [0, 1];
-
-suppress_all_plots = 0; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
-
+download_data = True; # If download the GCM dataset, can be useful if you don't want to get booted from someone's server, but be careful this will take up a lot of space real quick.
+ 
 #------------------------------------------------------------------------------
 #   MODEL/VAR/SCEN CHOICES
 #------------------------------------------------------------------------------
+ 
 # bcc-csm1-1 (0) did not have daily data available for 12/31/2099 for the RCP8.5 scenario only.
 # CCSM4 (4) and NorESM1-M (19) did not have relative humidity available at daily timescales.
-models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] # All complete sets
-#models      = [3, 4, 5, 6, 8, 9, 10, 11, 12, 15] #The RMJOC-II “10”. Note issues with model 4 in scenario=1
-models      = [3,5] # for testing
+#models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] # All complete sets
+#models      = [3, 4, 5, 6, 8, 9, 10, 11, 12, 15] #The RMJOC-II “10”. Note issues with model 4 in scenario=0 (historical)
+models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 15] # Selction of 12, RMJOC-II with extras
+#models      = [3] # for testing
 
-scenarios        = [ 2 ] # 1 is RCP4.5, 2 is RCP8.5
-
-VARNAME =('tasmax','tasmin','rhsmax','rhsmin','pr','rsds','uas','vas','huss')
-
+# 1 is RCP4.5, 2 is RCP8.5
+scenarios        = [ 1, 2 ] 
+#scenarios =[2]
 # Variables:
 #   0. Max Temperature
 #   1. Min Tempertuare
@@ -133,7 +122,24 @@ VARNAME =('tasmax','tasmin','rhsmax','rhsmin','pr','rsds','uas','vas','huss')
 #   7. Northward Wind Component (Not Supported)
 #   8. Specific Humidity
 variables         = [0, 1, 2, 3, 5, 8]
-variables         = [ 0, 1 ]
+#variables         = [ 0, 1 ]
+
+
+#------------------------------------------------------------------------------
+#   Output formats
+#------------------------------------------------------------------------------
+
+# FMY output formats, will print to csv, tmy2, and tmy3. Is a list of strings,
+#  containing ['csv','tmy'], and any combination of them or none. 
+# csv will output a csv file containing just the variables that are changed before and after the change
+# tmy will output a tmy file corresponding to the input file. 
+outformats = ['csv'];
+
+# Which Variables hourly plots
+hourly_plots = [0, 1]; # [0, 1, 2, 3, 5, 8]
+
+suppress_all_plots = 1; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
+
 
 #------------------------------------------------------------------------------
 #   Experimental Method Options (Leave as is if you aren't sure)
@@ -155,16 +161,18 @@ bias_correction_method = 0;
 #                           MAIN FUNCTION
 #==============================================================================
 
-def main( wpth, gpth, opth, outfrmt, 
+def main( wpth, dtpth, gpth, opth, outfrmt,tmy23,
                 stats, mods, scen, var, base_years, future_years,
                 meth, which_cc, interp_to, 
-                bias_correct, hrly_plts, supp_plts ):
+                bias_correct, hrly_plts, supp_plts, 
+                dl_data):
     
     from futureWeather import futureWeather;
     
     pkgs = ['numpy',
             'pandas',
             'matplotlib',
+            'json',
             'seaborn',
             'datetime',
             'time',
@@ -183,10 +191,11 @@ def main( wpth, gpth, opth, outfrmt,
             subprocess.check_call(['python', '-m', 'pip', 'install', package])   
             
     # Run program    
-    futureWeather( wpth,  gpth, opth, outfrmt, 
+    futureWeather( wpth, dtpth, gpth, opth, outfrmt, tmy23,
                   stats, mods, scen, var, base_years, future_years,
                   meth, which_cc, interp_to, 
-                  bias_correct, hrly_plts, supp_plts );
+                  bias_correct, hrly_plts, supp_plts,
+                  dl_data );
                        
                  
 
@@ -203,17 +212,19 @@ os.chdir(workingdir)
 
 os.makedirs(graphpath, exist_ok=True)
 os.makedirs(outputpath, exist_ok=True)
-    
+os.makedirs(datapath, exist_ok=True)
+
 #------------------------------------------------------------------------------
 #       Run scripts
 #------------------------------------------------------------------------------
 if __name__ == "__main__":
-    main( weatherpath,  graphpath, outputpath, outformats, 
+    main( weatherpath, datapath, graphpath, outputpath, outformats, load_tmy23, 
                   stations, models, scenarios, variables, 
                   tmy3_years, future_years,
                   method, which_current_climate, interpolate_to_station, 
                   bias_correction_method,
-                  hourly_plots, suppress_all_plots );
+                  hourly_plots, suppress_all_plots,
+                  download_data);
     
     
     

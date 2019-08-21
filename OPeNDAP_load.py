@@ -11,17 +11,18 @@ vs just using the closest grid point.
 
 @author: paul
 """
-
+import os;
 import pandas as pd;
 from datetime import datetime, date, timedelta
 from netCDF4 import Dataset
 import numpy as np
 import time
-from cfg import VARNAME, VARLONGNAME, MODELNAME, SCENNAME, YEAR_START, YEAR_END, RUN_NUM, DOMAIN, LAT_RANGE, LON_RANGE
+import json
+from cfg import VARNAME, VARLONGNAME, MODELNAME, SCENNAME, YEAR_START, YEAR_END, RUN_NUM, DOMAIN, LAT_RANGE, LON_RANGE, CITY
 
 
 #################################################################################
-def get_data(df, scen, var, models, LAT_TARGETS, LON_TARGETS, stations, daily = 0, interp = True):
+def get_data(df, scen, var, models, LAT_TARGETS, LON_TARGETS, stations, datapath, daily = 0, interp = True, download_data = False):
     station_inds = list(range(0,len(stations)))
        
     # Convert to numpy arrays so we can do maths
@@ -37,9 +38,10 @@ def get_data(df, scen, var, models, LAT_TARGETS, LON_TARGETS, stations, daily = 
             
             for vv in var:
                 ddffvariables = pd.DataFrame();
-
-                #Get data for all the stations
-                dat = load_data(sc, vv, mm, LAT_TARGETS, LON_TARGETS, stations, daily, interp);
+    
+                #Get data for all the stations off MACA with OPenDAP
+                dat = load_data(sc, vv, mm, LAT_TARGETS, LON_TARGETS, stations, daily, interp, datapath, download_data);
+                  
                 
                 for ss in station_inds:
                     ddffstations  = pd.DataFrame();
@@ -55,11 +57,8 @@ def get_data(df, scen, var, models, LAT_TARGETS, LON_TARGETS, stations, daily = 
                         
                         dl = len(dat[ss]['timehandle']);   
                         ddffinputs = pd.DataFrame( {'station':[stations[ss]]*dl, 
-                                                 'model':[mm]*dl,
-                                                 'scenario':[sc]*dl})
-#                        ddffinputs['station']     = [ss]*dl;
-#                        ddffinputs['model']       = [mm]*dl;
-#                        ddffinputs['scenario']    = [sc]*dl;
+                                                    'model':[mm]*dl,
+                                                    'scenario':[sc]*dl})
                         
                         # Manage time formats if first time through 
                         temp = from_1900_to_doy(dat[ss]['timehandle'], sc, daily);
@@ -91,12 +90,14 @@ def get_data(df, scen, var, models, LAT_TARGETS, LON_TARGETS, stations, daily = 
     return(df);
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    
+
 #Load data
-def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, interp):
+def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, interp, datapath, dl_dat ):
 
     start = time.time()
 
-    ll_range = 25;
+    ll_range = 20;
     #=========================================================
     #               Load data at station
     #=========================================================
@@ -114,121 +115,153 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
     # LAT_RANGE = [250, 584],
     # LON_RANGE = [0, 550],
     
+    fileName = ('agg_macav2metdata_' + str(VARNAME[var]) + '_' + 
+                str(MODELNAME[model]) + '_r' + str(RUN_NUM[model]) + 'i1p1_' +
+                str(SCENNAME[scen]) + '_' + Time + '_' + DOMAIN ) ;
+                 
     if daily == 1: # Load the daily data
         time_index = ['20453', '34332', '34332'];
-        
-        fileName = ('agg_macav2metdata_' + str(VARNAME[var]) + '_' + 
-                    str(MODELNAME[model]) + '_r' + str(RUN_NUM[model]) + 'i1p1_' +
-                    str(SCENNAME[scen]) + '_' + Time + '_' + DOMAIN + '_daily.nc?lat[' + 
-                    str(LAT_RANGE[0]) + ':1:' + str(LAT_RANGE[1]) +
+        fileName = fileName + '_daily.nc';
+        part2    = ('?lat[' +  str(LAT_RANGE[0]) + ':1:' + str(LAT_RANGE[1]) +
                     '],lon[' + str(LON_RANGE[0]) + ':1:' + str(LON_RANGE[1]) + 
                     '],crs[0:1:0],time[0:1:' + time_index[scen] + '],'
                     + VARLONGNAME[var] + '[0:1:' + time_index[scen] + '][' +
                     str(LAT_RANGE[0]) + ':1:' + str(LAT_RANGE[1]) +
-                    '][' + str(LON_RANGE[0]) + ':1:' + str(LON_RANGE[1]) + ']' )
+                    '][' + str(LON_RANGE[0]) + ':1:' + str(LON_RANGE[1]) + ']' );
                     
     elif daily == 0: # Load the monthly data
         time_index = ['671', '1127', '1127'];
-        
-        fileName = ( 'agg_macav2metdata_' + str(VARNAME[var]) + '_' + 
-                    str(MODELNAME[model]) + '_r' + str(RUN_NUM[model]) + 'i1p1_' +
-                    str(SCENNAME[scen]) + '_' + Time + '_' + DOMAIN + '_monthly.nc?lat[' + 
-                    str(LAT_RANGE[0]) + ':1:' + str(LAT_RANGE[1]) +
+        fileName = fileName + '_monthly.nc';
+        part2    = ('?lat[' + str(LAT_RANGE[0]) + ':1:' + str(LAT_RANGE[1]) +
                     '],lon[' + str(LON_RANGE[0]) + ':1:' + str(LON_RANGE[1]) + 
                     '],crs[0:1:0],time[0:1:' + time_index[scen] + '],'
                     + VARLONGNAME[var] + '[0:1:' + time_index[scen] + '][' +
                     str(LAT_RANGE[0]) + ':1:' + str(LAT_RANGE[1]) +
-                    '][' + str(LON_RANGE[0]) + ':1:' + str(LON_RANGE[1]) + ']' )
+                    '][' + str(LON_RANGE[0]) + ':1:' + str(LON_RANGE[1]) + ']' );
                     
-        
-    fullfilename= dirPath+fileName
-
-    print('Loading... ' + fullfilename)
-
-    # Sort data
-    filehandle=Dataset(fullfilename,'r',format="NETCDF4")
-    lathandle=filehandle.variables['lat']
-    lonhandle=filehandle.variables['lon']
-    timehandle=filehandle.variables['time']
-    datahandle=filehandle.variables[VARLONGNAME[var]]
+    else: print('ERROR: incorrect value for daily used must be 0, or 1');
     
-    #=========================================================
-    # get lat and lon in a usable form
-    lat = lathandle[:]
-    lon = lonhandle[:]
-    
-    #=========================================================
-    # get the data for the different stations
-    lst = [];
+    fullfilename = dirPath + fileName + part2
+
+    # Check locally for the GCM data else go look on the MACA site.
+    sst = False;
     for ss in range(0,len(stations)): 
-        lat_target  = lat_targets[ss] 
-        lon_target  = lon_targets[ss]
-        
-        #=========================================================
-        # check the target is inbounds
-        if not (min(lat) <= lat_target <= max(lat)):
-            print('ERROR: The target station, number '+ ss +' is out of the lat bounds, consider changing the station or the index bounds in cfg.py')
-        if not (min(lon) <= lon_target <= max(lon)):
-            print('ERROR: The target station, number '+ ss +' is out of the lon bounds, consider changing the station or the index bounds in cfg.py')
+        if not os.path.exists(datapath + CITY[stations[ss]] + fileName):
+            sst = True;
 
-        #=========================================================
-        #find indices of target lat/lon/day
-        lat_index = (np.abs(lat-lat_target)).argmin()
-        lon_index = (np.abs(lon-lon_target)).argmin()
-        
-        #check final is in right bounds
-        if(lat[lat_index]>lat_target):
-        	if(lat_index!=0):
-        		lat_index = lat_index - 1
-        if(lat[lat_index]<lat_target):
-        	if(lat_index!=len(lat)):
-        		lat_index =lat_index +1
-        if(lon[lon_index]>lon_target):
-        	if(lon_index!=0):
-        		lon_index = lon_index - 1
-        if(lon[lon_index]<lon_target):
-        	if(lon_index!=len(lon)):
-        		lon_index = lon_index + 1
-        
-        #=========================================================
-        # If interpolating to the station or not.
-        if interp:
+
+    # If there's one station missing data load it
+    lst = [];
+    if sst:   
+        print('Loading... ' + fullfilename)
+
+        # Get data from the MACA address           
+        filehandle = Dataset(fullfilename,'r',format="NETCDF4")     
             
-            #adjust range for interpolation so that its not out of the index bounds (i.e. not a negative index)
-            if lat_index - ll_range < 0:
-                ll_range = lat_index;
-            elif lat_index + ll_range >= len(datahandle[0,:,0]):
-                ll_range = len(datahandle[0,:,0]) - lat_index;
-            if lon_index - ll_range < 0:
-                ll_range = lon_index
-            elif lon_index + ll_range >= len(datahandle[0,0,:]):
-                ll_range =  len(datahandle[0,0,:]) - lon_index
+        # Sort data
+        lathandle   = filehandle.variables['lat']
+        lonhandle   = filehandle.variables['lon']
+        timehandle  = filehandle.variables['time']
+        datahandle  = filehandle.variables[VARLONGNAME[var]]
+        
+        #=========================================================
+        # get lat and lon in a usable form
+        lat = lathandle[:]
+        lon = lonhandle[:]
+        
+        #=========================================================
+        # get the data for the different stations
+        for ss in range(0,len(stations)): 
+            lat_target  = lat_targets[ss] 
+            lon_target  = lon_targets[ss]
+            
+            #=========================================================
+            # check the target is inbounds
+            if not (min(lat) <= lat_target <= max(lat)):
+                print('ERROR: The target station, number '+ str(ss) +' is out of the lat bounds, consider changing the station or the index bounds in cfg.py')
+            if not (min(lon) <= lon_target <= max(lon)):
+                print('ERROR: The target station, number '+ str(ss) +' is out of the lon bounds, consider changing the station or the index bounds in cfg.py')
+    
+            #=========================================================
+            #find indices of target lat/lon/day
+            lat_index = (np.abs(lat-lat_target)).argmin()
+            lon_index = (np.abs(lon-lon_target)).argmin()
+            
+            #check final is in right bounds
+            if(lat[lat_index]>lat_target):
+            	if(lat_index!=0):
+            		lat_index = lat_index - 1
+            if(lat[lat_index]<lat_target):
+            	if(lat_index!=len(lat)):
+            		lat_index =lat_index +1
+            if(lon[lon_index]>lon_target):
+            	if(lon_index!=0):
+            		lon_index = lon_index - 1
+            if(lon[lon_index]<lon_target):
+            	if(lon_index!=len(lon)):
+            		lon_index = lon_index + 1
+            
+            #=========================================================
+            # If interpolating to the station or not.
+            if interp:
                 
-            #set lat and lon index such that they are a range for gridded interpolation
-            lat_index = list(range(lat_index - ll_range, lat_index + ll_range))
-            lon_index = list(range(lon_index - ll_range, lon_index + ll_range))
+                #adjust range for interpolation so that its not out of the index bounds (i.e. not a negative index)
+                if lat_index - ll_range < 0:
+                    ll_range = 0;
+                elif lat_index + ll_range >= len(datahandle[0,:,0]):
+                    ll_range = len(datahandle[0,:,0]);
+                if lon_index - ll_range < 0:
+                    ll_range = 0
+                elif lon_index + ll_range >= len(datahandle[0,0,:]):
+                    ll_range =  len(datahandle[0,0,:])
+                    
+                #set lat and lon index such that they are a range for gridded interpolation
+                lat_index = list(range(lat_index - ll_range, lat_index + ll_range))
+                lon_index = list(range(lon_index - ll_range, lon_index + ll_range))
+                
+                lat_interp = lat[lat_index]
+                lon_interp = lon[lon_index] 
+                
+                #=====================
+                
+                station_data = interp2station(lat_interp, lon_interp, lat_target, lon_target, 
+                                              datahandle[:,lat_index,lon_index]);
             
-            lat_interp = lat[lat_index]
-            lon_interp = lon[lon_index] 
+                #=====================
+                
+                lst.append({'timehandle': timehandle[:].data,
+                      str(VARNAME[var]): station_data})
             
-            #=====================
-            
-            station_data = interp2station(lat_interp, lon_interp, lat_target, lon_target, 
-                                          datahandle[:,lat_index,lon_index]);
+                if dl_dat: # Write to file if downloading data.
+                    with open(datapath+CITY[stations[ss]]+fileName, 'w') as out_file:
+                            json.dump({'timehandle': timehandle[:].data.tolist(),
+                                       str(VARNAME[var]): station_data.tolist()}, out_file)
+
+            else: #on if interp:
+                lst.append({'timehandle': timehandle[:].data,
+                      str(VARNAME[var]): datahandle[:,lat_index,lon_index]})
         
-            #=====================
+                if dl_dat: # Write to file if downloading data.
+                    with open(datapath+CITY[stations[ss]]+fileName, 'w') as out_file:
+                            json.dump({'timehandle': timehandle[:].data.tolist(),
+                                       str(VARNAME[var]): station_data.tolist()}, out_file) 
+    
+    # All the data is on the computer
+    else: 
+        for ss in range(0,len(stations)): 
+            fullfilename = datapath+CITY[stations[ss]]+fileName;
             
-            lst.append({'timehandle': timehandle,
-                  str(VARNAME[var]): station_data})
-        
-        else: #on if interp:
-            lst.append({'timehandle': timehandle,
-                  str(VARNAME[var]): datahandle[:,lat_index,lon_index]})
-        
+            print('Loading... ' + fullfilename)
+
+            with open(fullfilename, 'r') as in_file:
+                temp = json.load(in_file);
+                lst.append({'timehandle': np.array(temp['timehandle']),
+                      str(VARNAME[var]): np.array(temp[VARNAME[var]])})
         
     print('Time to import: %.2f s\n' % (time.time()-start))
-    
+        
     return(lst);
+    
     
 #    import matplotlib.pyplot as plt;
 #    fig, ax0 = plt.subplots(1)
@@ -243,7 +276,32 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
 #=========================================================
 #=========================================================
 #=========================================================
+ 
+def write_file(file, src):
     
+    #output file
+    dst = Dataset(file, "w", format="NETCDF4")
+    
+    # copy global attributes all at once via dictionary
+    dst.setncatts(src.__dict__)
+    # copy dimensions
+    for name, dimension in src.dimensions.items():
+        dst.createDimension(
+            name, (len(dimension) if not dimension.isunlimited() else None))
+    # copy all file data 
+    for name, variable in src.variables.items():
+        x = dst.createVariable(name, variable.datatype, variable.dimensions)
+        dst[name][:] = src[name][:]
+        # copy variable attributes all at once via dictionary
+        #dst[name].setncatts(src[name].__dict__)
+        
+    # close the output file
+    dst.close()
+    
+###############################################################################    
+
+###############################################################################
+                            
 #Convert months since 1900-01-01 00:00:00
 def from_1900_to_doy(time1, scen, daily):
     leap_years = np.array([1904, 1908, 1912, 1916, 1920, 1952, 1956, 1960, 1964, 1968, 1972, 1976, 1980, 1984, 1988, 1992, 1996, 
@@ -255,7 +313,7 @@ def from_1900_to_doy(time1, scen, daily):
     tempy   = [0]*(len(time1));
     tempm   = [0]*(len(time1));
         
-    day = time1[:].data;
+    day = time1;
     
     # Account for leap years before the time array starts counting days.
     # scenario == 0 starting at 1950, scenario > 0 == 2006
