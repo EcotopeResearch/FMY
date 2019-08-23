@@ -5,12 +5,12 @@ Writen in Python 3.7
 
 A script to make future hourly weather from the typical meteorological year (TMY) and global climate models (GCM)
 
-FMY was developed for usage with simulation in mind, it is intended to write FMY files in the .tm2 and .tm3 format for SEEM. 
+FMY was developed for usage with simulation in mind, it is intended to read TMY2 and TMY3 files and to write FMY files in the TMY2 and TMY3 format for SEEM. 
 
 ## Before Running
 1. Open main.py in a python or text editor.
 2. Set the paths to the data directory, and the output paths for graphs and fmy.tm2 files. The script will create the output directories if they don't exist.
-3. Set output formats, 'csv', 'tmy2', 'tmy3'
+3. Set output formats, 'csv' or 'tmy'
 4. Set which stations to look at, numbers correspond to the cities in the city list.
 5. Set suppress_all_plots do it. 0 makes no plots, 1 creates graphs in the graph folder.
 6. Set which models to look at, need to look at at least 1.

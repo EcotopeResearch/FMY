@@ -65,65 +65,92 @@ workingdir = 'R:/NPCC/2019_Future_Meteorological_Years (19-028-BL)/Python/FMY'
 # Path to local TMY data in .tm2 format 
 # File names are state_abbreviation_city_2or3.format, for example WASeattle3.tm2
 weatherpath = 'C:/Users/paul/Documents/TMY/';# "E:/TMY2DATA/"; 
+   
+# Data path for GCM data if download_data = True
+datapath = "C:/Users/paul/Documents/TMY/GCM_Data/";
+load_tmy23 = 3; #Input files are in (2) TMY2 fromat or (3) TMY3 format
 
 # Output path for graphs
-graphpath = "./Graphs_FMY_all_models/";      
+graphpath = "./Graphs_FMY_all_models/"; 
+  
+# Output path for future .tm2 and .csv files
+outputpath = "./output_FMY/";
 
-# Data path for GCM data if download_data = True
-datapath = "C:/Users/paul/Documents/tmy2/GCM_Data/";
-
-# Output path for future .tm2 and .tm3 files
-outputpath = "./output_FMY_all_models/"  
-
-load_tmy23 = 2; #Input files are in (2) tmy2 fromat or (3) tmy3 format
 
 #------------------------------------------------------------------------------
-# Set Cities: 
-#    0. Seattle (WA)
-#    1. Corvallis (OR)
-#    2. Boise (ID)
-#    3. Redmond(OR)
-#    4. Elko (NV)
-#    5. Burley (ID)
-#    6. Soda_Springs (ID)
-#    7. Havre (MT)
-#    8. Miles City (MT)
+#   Input Choices
+#------------------------------------------------------------------------------
+ 
+"""
+ Set Cities: 
+    0. Seattle (WA)
+    1. Corvallis (OR)
+    2. Boise (ID)
+    3. Redmond(OR)
+    4. Elko (NV)
+    5. Burley (ID)
+    6. Soda_Springs (ID)
+    7. Havre (MT)
+    8. Miles City (MT)
+"""
 stations    = [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ];
 #stations    = [  0 ]; 
+
+
+#------------------------------------------------------------------------------
+#   MODEL/VAR/SCEN CHOICES
+#------------------------------------------------------------------------------
+"""
+ The GCMs available in MACA are:
+ 0.   bcc-csm1-1
+ 1.   bcc-csm1-1-m
+ 2.   BNU-ESM
+ 3.   CanESM2
+ 4.   CCSM4
+ 5.   CNRM-CM5
+ 6.   CSIRO-Mk3-6-0
+ 7.   GFDL-ESM2G
+ 8.   GFDL-ESM2M
+ 9.   HadGEM2-CC365
+ 10.  HadGEM2-ES365
+ 11.  inmcm4
+ 12.  IPSL-CM5A-MR
+ 13.  IPSL-CM5A-LR
+ 14.  IPSL-CM5B-LR
+ 15.  MIROC5
+ 16.  MIROC-ESM
+ 17.  MIROC-ESM-CHEM
+ 18.  MRI-CGCM3
+ 19.  NorESM1-M
+ 
+NOTE:
+ bcc-csm1-1 (0) did not have daily data available for 12/31/2099 for the RCP8.5 scenario only.
+ CCSM4 (4) and NorESM1-M (19) did not have relative humidity available at daily timescales.
+"""
+#models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] # All complete sets
+#models      = [3, 4, 5, 6, 8, 9, 10, 11, 12, 15] #The RMJOC-II “10”. Note issues with model 4 in scenario=0 (historical)
+models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 15] # Selction of 12, RMJOC-II with extras
+models      = [5] # for testing
+
+# 1 is RCP4.5, 2 is RCP8.5
+scenarios        = [ 1, 2 ] 
+scenarios = [2]
 
 # Years to average over
 tmy3_years   = [ 1976, 2005 ]; # Years that the tmy3 weather files are taken from. This is the baseline time frame too.
 future_years = [ 2020, 2049 ]; # Future years from 2006 - 2099.
 
-download_data = True; # If download the GCM dataset, can be useful if you don't want to get booted from someone's server, but be careful this will take up a lot of space real quick.
- 
-#------------------------------------------------------------------------------
-#   MODEL/VAR/SCEN CHOICES
-#------------------------------------------------------------------------------
- 
-# bcc-csm1-1 (0) did not have daily data available for 12/31/2099 for the RCP8.5 scenario only.
-# CCSM4 (4) and NorESM1-M (19) did not have relative humidity available at daily timescales.
-#models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] # All complete sets
-#models      = [3, 4, 5, 6, 8, 9, 10, 11, 12, 15] #The RMJOC-II “10”. Note issues with model 4 in scenario=0 (historical)
-models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 15] # Selction of 12, RMJOC-II with extras
-#models      = [3] # for testing
-
-# 1 is RCP4.5, 2 is RCP8.5
-scenarios        = [ 1, 2 ] 
-#scenarios =[2]
 # Variables:
 #   0. Max Temperature
-#   1. Min Tempertuare
+#   1. Min Temperature
 #   2. Max Relative Humidity
-#   3. Min Relative HUmidity
-#   4. Precipitation (Not Supported)
+#   3. Min Relative Humidity
+#   4. Precipitation (Not FMY Supported)
 #   5. Surface Downwelling Shortwave Flux in Air 
-#   6. Eastward Wind Component (Not Supported)
-#   7. Northward Wind Component (Not Supported)
+#   6. Eastward Wind Component (Not FMY Supported)
+#   7. Northward Wind Component (Not FMY Supported)
 #   8. Specific Humidity
 variables         = [0, 1, 2, 3, 5, 8]
-#variables         = [ 0, 1 ]
-
 
 #------------------------------------------------------------------------------
 #   Output formats
@@ -131,15 +158,19 @@ variables         = [0, 1, 2, 3, 5, 8]
 
 # FMY output formats, will print to csv, tmy2, and tmy3. Is a list of strings,
 #  containing ['csv','tmy'], and any combination of them or none. 
-# csv will output a csv file containing just the variables that are changed before and after the change
+# csv will output a csv file containing just the variables that are changed before and after the change.
+# csv DOES NOT write a TMY3 formated file
 # tmy will output a tmy file corresponding to the input file. 
-outformats = ['csv'];
+outformats = ['csv', 'tmy'];
 
 # Which Variables hourly plots
-hourly_plots = [0, 1]; # [0, 1, 2, 3, 5, 8]
+hourly_plots =  [0, 1, 2, 3, 5, 8];
 
-suppress_all_plots = 1; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
+suppress_all_plots = True; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
 
+# If download the GCM dataset, can be useful if you are worried about getting 
+# booted from someone's server
+download_data = True; 
 
 #------------------------------------------------------------------------------
 #   Experimental Method Options (Leave as is if you aren't sure)
@@ -169,15 +200,8 @@ def main( wpth, dtpth, gpth, opth, outfrmt,tmy23,
     
     from futureWeather import futureWeather;
     
-    pkgs = ['numpy',
-            'pandas',
-            'matplotlib',
-            'json',
-            'seaborn',
-            'datetime',
-            'time',
-            'metpy',
-            'netCDF4']
+    pkgs = ['numpy',  'pandas',  'matplotlib',  'seaborn',  'json',
+             'datetime',  'time',  'metpy',  'netCDF4'];
     
     # Check for packages
     if importlib.util.find_spec('pip') is None: 

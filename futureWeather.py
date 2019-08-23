@@ -448,9 +448,9 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
                               '_' +  SCENNAME[sc] + '_' + METHODNAMES[method-1] +
                               '_' + which_current_climate + '.csv')
     
-                if 'tmy2' in outformats or 'tmy3' in outformats:
+                if 'tmy' in outformats or 'tmy2' in outformats or 'tmy3' in outformats:
                     #Write to fmy
-                    fmy = weather(weatherpath, CITY[ss]);
+                    fmy = weather(weatherpath, CITY[ss], load_tmy23);
                     fmy.get_weather();
                     fmy.tdry    = tempdf.T_fmy;
                     fmy.tdew    = tempdf.Tdew_fmy;
@@ -459,7 +459,5 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
                     fmy.dirnorm = tempdf.Rdir_fmy;
                     fmy.difhor  = tempdf.Rdiff_fmy;
                     
-                    if 'tmy2' in outformats:
-                        fmy.write_tmy2( outputpath, MODELNAME[mm], SCENNAME[sc] );
-                    if 'tmy3' in outformats:
-                        fmy.write_tmy3( outputpath, MODELNAME[mm], SCENNAME[sc] );
+                    fmy.write_fmy( outputpath, MODELNAME[mm], SCENNAME[sc], future_years );
+                    

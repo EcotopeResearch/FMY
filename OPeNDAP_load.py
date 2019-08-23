@@ -27,7 +27,7 @@ def get_data(df, scen, var, models, LAT_TARGETS, LON_TARGETS, stations, datapath
        
     # Convert to numpy arrays so we can do maths
     LAT_TARGETS = np.array(LAT_TARGETS);   
-    LON_TARGETS = 360-np.array(LON_TARGETS); #should be in [0 360 ]E
+    LON_TARGETS = 360-abs(np.array(LON_TARGETS)); #should be in [0 360 ]E 
     
     
     # Iterate over the combination of stations scenarios and models chosen.
@@ -97,7 +97,7 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
 
     start = time.time()
 
-    ll_range = 20;
+    ll_range = 15;
     #=========================================================
     #               Load data at station
     #=========================================================
@@ -207,17 +207,20 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
                 
                 #adjust range for interpolation so that its not out of the index bounds (i.e. not a negative index)
                 if lat_index - ll_range < 0:
-                    ll_range = 0;
+                    lat_range = 0;
                 elif lat_index + ll_range >= len(datahandle[0,:,0]):
-                    ll_range = len(datahandle[0,:,0]);
+                    lat_range = len(datahandle[0,:,0]) - lat_index - 1;
+                else:
+                    lat_range = ll_range;
                 if lon_index - ll_range < 0:
-                    ll_range = 0
+                    lon_range = 0
                 elif lon_index + ll_range >= len(datahandle[0,0,:]):
-                    ll_range =  len(datahandle[0,0,:])
-                    
+                    lon_range =  len(datahandle[0,0,:]) - lon_index - 1
+                else:
+                    lon_range = ll_range;
                 #set lat and lon index such that they are a range for gridded interpolation
-                lat_index = list(range(lat_index - ll_range, lat_index + ll_range))
-                lon_index = list(range(lon_index - ll_range, lon_index + ll_range))
+                lat_index = list(range(lat_index - lat_range, lat_index + lat_range))
+                lon_index = list(range(lon_index - lon_range, lon_index + lon_range))
                 
                 lat_interp = lat[lat_index]
                 lon_interp = lon[lon_index] 

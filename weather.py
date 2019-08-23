@@ -69,14 +69,12 @@ class weather:
 
     def get_weather(self):
         
-        #filename = TMY3NUMBER[ CITY == self.city ];
-        f = open(self.weatherpath+self.city+self.file_ext,'r');
-        
         #------------------------------------------------------
         #------------------------------------------------------
         # Load TMY2
         if self.file_ext == TMY2EXT:
-        
+            f = open(self.weatherpath+self.city+self.file_ext,'r');
+
             # Header read for lat and lon
             head = f.readline();
             self.lat = int(head[39:41]) + int(head[42:44])/60.0;
@@ -123,7 +121,8 @@ class weather:
         #------------------------------------------------------
         # Load TMY3
         elif self.file_ext == TMY3EXT:
-        #f = open('C:/Users/paul/Documents/TMY/727930TYA.CSV','r')
+            f = open(self.weatherpath+TMY3NUMBER[CITY.index(self.city)]+self.file_ext,'r');
+            
             # Header read for lat and lon
             head = f.readline().split(',');
             self.lat = float(head[4]) ;
@@ -132,10 +131,14 @@ class weather:
             #Burn a line for the second part of the header.
             line = f.readline() 
             
-            line = f.readline().split(','); 
+            line = f.readline(); 
             ind = 0;
             while line:
                 
+                line = line.split(',');
+                
+                if len(line) < 20:
+                    print('line is short!')
                 # Process the line
                 self.tothor[ind]       = float(line[4])             #Total horizontal solar Wh/m2
                 self.dirnorm[ind]      = float(line[7])             #Direct normal solar Wh/m2
@@ -145,14 +148,11 @@ class weather:
                 self.rhs[ind]          = float(line[37]) * 0.01;		#relative humidity (%)
                 self.tdew[ind]         = float(line[34]);		#tdew (deg C) to conform with TB code
     
-                self.press[ind]        = float(line[41]);			#atmospheric pressure (mbar) mb = 100 Pascals
-                #self.wind_speed[ind]   = float(line[95:98]) * 0.1;		#windspeed m/s
-                #self.wind_dir[ind]     = float(line[90:93]);   			#wind direction azimuth
+                self.press[ind]        = float(line[40]);			#atmospheric pressure (mbar) mb = 100 Pascals
+                #self.wind_speed[ind]   = float(line[46]);		#windspeed m/s
+                #self.wind_dir[ind]     = float(line[43]);   			#wind direction azimuth
                 
-                #self.cloud[ind]        = float(line[59:61])/10.0;		    #Could cover fraction
-                #wd.ocloud       = getint(line,63,2)/10.0;		        #Opaque cloud cover fraction
-                #wd.ceilht       = getint(line,106,5);		            #Cloud ceiling height m
-                
+              
                 # Calculate specfic humidity from dry bulb, dew point, and atm pressure using MetPy
                 self.huss[ind] = mpcalc.specific_humidity_from_mixing_ratio(
                                     mpcalc.mixing_ratio_from_relative_humidity(
@@ -164,7 +164,7 @@ class weather:
                                             )
                 
                 #Next line
-                line = f.readline().split(',');
+                line = f.readline();
                 ind = ind + 1;
     
             f.close();
@@ -370,12 +370,26 @@ class weather:
         
 
 ###############################################################################
-    def write_tmy2(self, outdir, modelname, scenname):
+    def write_fmy(self, outdir, mod, scen, fyrs):
+        #Method to write output of to FMY file.
+        
+        if ( self.file_ext == TMY2EXT):
+            self.write_tmy2(outdir, mod, scen, fyrs);
+            
+        elif ( self.file_ext == TMY3EXT):
+            self.write_tmy3(outdir, mod, scen, fyrs);
+
+###############################################################################
+        
+        
+    def write_tmy2(self, outdir, modelname, scenname, future_yrs):
         
         self.check_tmy2_limits();
         
         f = open(self.weatherpath+self.city+self.file_ext,'r');
-        g = open(outdir + self.city + "_future_" + modelname + "_" + scenname + self.file_ext,'w+');
+        g = open(outdir + self.city + "_future_" + 
+                 str(future_yrs[0]) + "_" + str(future_yrs[0]) + "_" +
+                 modelname + "_" +  scenname +  self.file_ext , 'w+');
 
         #####################
         # Write the header verbatum
@@ -417,11 +431,13 @@ class weather:
         
 ###############################################################################
 
-    def write_tmy3(self, outdir, modelname, scenname):
+    def write_tmy3(self, outdir, modelname, scenname, future_yrs):
                 
-        f = open(self.weatherpath+self.city+self.file_ext,'r');
-        g = open(outdir + self.city + "_future_" + modelname + "_" + scenname + self.file_ext,'w+');
-
+        f = open(self.weatherpath+TMY3NUMBER[CITY.index(self.city)]+self.file_ext,'r');
+        g = open(outdir + self.city + "_future_" + 
+                 str(future_yrs[0]) + "_" + str(future_yrs[0]) + "_" +
+                 modelname + "_" +  scenname +  self.file_ext , 'w+');
+                 
         #####################
         # Write the header lines verbatum
         head = f.readline();
