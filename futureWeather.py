@@ -48,7 +48,7 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
     # Data frame for FMY data.
     df_fmy  = pd.DataFrame([]);
     
-    # Switch Data Collection based on method
+    # Change Data Collection window based on the method chosen
     if method == 1:
         daily       = 1; # Gets daily data (1) or monthly data (0).
         daily_max   = 0; # For stats (0) gets the max/min for the whole month, 1 gets the monthly mean of the daily max/min
@@ -58,7 +58,7 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
     elif method == 3:
         daily       = 0; # Gets daily data (1) or monthly data (0).
         daily_max   = 1; # For stats (0) gets the max/min for the whole month, 1 gets the monthly mean of the daily max/min
-    
+   
 
     #===============================================================================
     #===============================================================================
@@ -77,7 +77,7 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
         LAT_TARGETS[ss] = tmy[ss].lat;
         LON_TARGETS[ss] = tmy[ss].lon;
         
-        print('Loaded TMY dataset of ' + CITY[ss] + '.\n')
+        print('Loaded TMY dataset of ' + CITY[stations[ss]] + '.\n')
     
     
     print('Loading GCM data...')
@@ -140,9 +140,7 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
     elif bias_correction_method == 0: #The corrected variables are just the variables
             for vv in var:
                 dffut[str(VARNAME[vv]+'_c')] = dffut[VARNAME[vv]];
-    
-    else: print("\nWARNING: Invalid bias_correction_method chose can be 0,1,2,3, continuing without a correction.\n")
-    
+        
     # Give the historical data frame that same name for their values so we can use one fuction for both
     for vv in var:
         dfhist[str(VARNAME[vv]+'_c')] = dfhist[VARNAME[vv]];
@@ -156,24 +154,18 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
     #=========================================================
     #                Mean Temperature
     #=========================================================
-    if 0 in var or 1 in var:
-        if 0 in var and 1 in var:
-            dfhist['tasmean'] = ( dfhist['tasmax_c'] + dfhist['tasmin_c'] ) / 2.;
+    if 0 in var and 1 in var:
+        dfhist['tasmean'] = ( dfhist['tasmax_c'] + dfhist['tasmin_c'] ) / 2.;
     
-            dffut['tasmean'] = ( dffut['tasmax_c'] + dffut['tasmin_c'] ) / 2.;
-        else:
-            print("\nWARNING: Selecting the max/min temperature without the other add 0/1 to var")  
-            
+        dffut['tasmean'] = ( dffut['tasmax_c'] + dffut['tasmin_c'] ) / 2.;
+        
     #=========================================================
     #                Mean Relative Humidity
     #=========================================================
-    if 2 in var or 3 in var:
-        if 2 in var and 3 in var:
-            dfhist['rhsmean'] = ( dfhist['rhsmax_c'] + dfhist['rhsmin_c'] ) / 2.;
-    
-            dffut['rhsmean'] = ( dffut['rhsmax_c'] + dffut['rhsmin_c'] ) / 2.;
-        else:
-            print("\nWARNING: Selecting the max/min relative humidity without the other add 2/3 to var")    
+    if 2 in var and 3 in var:
+        dfhist['rhsmean'] = ( dfhist['rhsmax_c'] + dfhist['rhsmin_c'] ) / 2.;
+
+        dffut['rhsmean'] = ( dffut['rhsmax_c'] + dffut['rhsmin_c'] ) / 2.;
     
     #=========================================================
     #                Find Month Closest to Average
@@ -208,7 +200,7 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
     
     # Quick Check on the unique number of months in dfam
     if not (sum(df1.groupby('month').nunique().station == [len(stations)]*12) == 12):
-        print('\nWARNING: Each station was not given an average month for each month of the year')
+        raise Exception('\nERROR: Each station was not given an average month for each month of the year')
     
     ###############################################################################
     #           Historical Plot
@@ -403,10 +395,7 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
         for vv in var:             
             # Grab the monthly means of a variable and put it into dataframe 
             dfc0[VARNAME[vv]] = list( df.groupby(['station', 'month', 'model', 'scenario'])[VARNAME[vv]+'_c'].agg(['mean']).reset_index()['mean'] )
-    else: 
-        print('\nWARNING: which_current_climate is ,' + which_current_climate + ' should be set to ''tmy'' or ''gcm''. Defaulting to tmy.\n')
-        dfc0 = dft;
-    
+   
     df_fmy  = pd.DataFrame([]);   
     fmy = [0] * len(station_inds);  
     
@@ -443,12 +432,12 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
                 #Concat the new dataframe onto the bottom.
                 df_fmy = pd.concat([df_fmy, tempdf], axis = 0);
                 
-                if 'csv' in outformats:
+                if 'csv' in (name.lower() for name in outformats) :
                     tempdf.to_csv(outputpath + 'FMY_' + CITY[ss] + '_' + MODELNAME[mm] +
                               '_' +  SCENNAME[sc] + '_' + METHODNAMES[method-1] +
                               '_' + which_current_climate + '.csv')
     
-                if 'tmy' in outformats or 'tmy2' in outformats or 'tmy3' in outformats:
+                if 'tmy' in (name.lower() for name in outformats) :
                     #Write to fmy
                     fmy = weather(weatherpath, CITY[ss], load_tmy23);
                     fmy.get_weather();

@@ -139,7 +139,7 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
                     str(LAT_RANGE[0]) + ':1:' + str(LAT_RANGE[1]) +
                     '][' + str(LON_RANGE[0]) + ':1:' + str(LON_RANGE[1]) + ']' );
                     
-    else: print('ERROR: incorrect value for daily used must be 0, or 1');
+    else: raise Exception('\nERROR: incorrect value for daily used must be 0, or 1');
     
     fullfilename = dirPath + fileName + part2
 
@@ -178,9 +178,9 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
             #=========================================================
             # check the target is inbounds
             if not (min(lat) <= lat_target <= max(lat)):
-                print('ERROR: The target station, number '+ str(ss) +' is out of the lat bounds, consider changing the station or the index bounds in cfg.py')
+                raise Exception('\nERROR: The target station, number '+ str(ss) +' is out of the lat bounds, consider changing the station or the index bounds in cfg.py')
             if not (min(lon) <= lon_target <= max(lon)):
-                print('ERROR: The target station, number '+ str(ss) +' is out of the lon bounds, consider changing the station or the index bounds in cfg.py')
+                raise Exception('\nERROR: The target station, number '+ str(ss) +' is out of the lon bounds, consider changing the station or the index bounds in cfg.py')
     
             #=========================================================
             #find indices of target lat/lon/day

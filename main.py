@@ -94,7 +94,7 @@ outputpath = "./output_FMY/";
     8. Miles City (MT)
 """
 stations    = [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ];
-#stations    = [  0 ]; 
+stations    = [ 3,4]; 
 
 
 #------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ future_years = [ 2020, 2049 ]; # Future years from 2006 - 2099.
 #   6. Eastward Wind Component (Not FMY Supported)
 #   7. Northward Wind Component (Not FMY Supported)
 #   8. Specific Humidity
-variables         = [0, 1, 2, 3, 5, 8]
+variables         = [0, 1, 2, 3, 8]
 
 #------------------------------------------------------------------------------
 #   Output formats
@@ -185,7 +185,7 @@ which_current_climate = 'gcm';
 
 interpolate_to_station = True;
 
-# 0 no correction / 1 is EDCDFm / 2 should be CDFm / 3 is linear Hawkins
+# 0 no correction / 1 is EDCDFm / 2 should be CDFm 
 bias_correction_method = 0;
 
 #==============================================================================
@@ -205,13 +205,13 @@ def main( wpth, dtpth, gpth, opth, outfrmt,tmy23,
     
     # Check for packages
     if importlib.util.find_spec('pip') is None: 
-       print("installing pip")
+       print("Installing pip... \n")
        cmd = "sudo easy_install pip"
        os.system(cmd)
             
     for package in pkgs:
         if importlib.util.find_spec(package) is None: 
-            print("installing " + package)
+            print("Installing " + package + "... \n")
             subprocess.check_call(['python', '-m', 'pip', 'install', package])   
             
     # Run program    
@@ -238,6 +238,56 @@ os.makedirs(graphpath, exist_ok=True)
 os.makedirs(outputpath, exist_ok=True)
 os.makedirs(datapath, exist_ok=True)
 
+
+#------------------------------------------------------------------------------
+#       Check Inputs.
+#------------------------------------------------------------------------------
+# Check inputs that are lists are lists.
+if  type(variables) != list:
+    raise Exception("\nERROR: variables must be a list, it should have square brackets around the number(s), i.e. [3]")
+if  type(models) != list:
+    raise Exception("\nERROR: models must be a list, it should have square brackets around the number(s), i.e. [3]")
+if  type(scenarios) != list:
+    raise Exception("\nERROR: scenarios must be a list, it should have square brackets around the number(s), i.e. [2]")
+if  type(future_years) != list:
+    raise Exception("\nERROR: future_years must be a list, it should have square brackets around the number(s), i.e. [2010, 2019]")
+if  type(tmy3_years) != list:
+    raise Exception("\nERROR: tmy3_years must be a list, it should have square brackets around the number(s), i.e. [1990, 2005]")
+if  type(outformats) != list:
+    raise Exception("\nERROR: outformats must be a list, it should have square brackets around the number(s), i.e. ['tmy']")
+if  type(hourly_plots) != list:
+    raise Exception("\nERROR: hourly_plots must be a list, it should have square brackets around the number(s), i.e. [0,1]")
+
+# Check variables 
+if 0 in variables or 1 in variables:
+    if not (0 in variables and 1 in variables):
+        raise Exception("\nERROR: Selecting the max/min temperature without the other add 0/1 to var")  
+if 2 in variables or 3 in variables:
+    if not (2 in variables and 3 in variables):
+        raise Exception("\nERROR:: Selecting the max/min relative humidity without the other add 2/3 to var")   
+
+# Check years
+if len(future_years) != 2 or max(future_years) > 2099 or min(future_years) < 2006:
+    raise Exception("\nERROR: future_years must be a list of two years bounded by 2006, and 2099, i.e. [2020, 2049]")
+
+if len(tmy3_years) !=  2or max(tmy3_years) > 2005 or min(tmy3_years) < 1950:     
+    raise Exception("\nERROR: tmy3_years must be a list of two years bounded by 1950 and 2005, i.e. [1976, 2005]")
+
+#Check things are in bounds 
+if not (0 < scenarios <= 2):
+    raise Exception('\nERROR: Invalid scenarios chosen, can only choose 1 or 2, but user input was: '+ str(scenarios)+'.\n')
+if not (0 < method <= 3):
+    raise Exception('\nERROR: Invalid method chosen, can only choose 1, 2, or 3, but user input was: '+ str(method)+'.\n')
+if not (0 <=  bias_correction_method <=3):  
+    raise Exception("\nERROR: Invalid bias_correction_method chose can be 0, 1, 2, 3, user input was: "+ str(bias_correction_method)+'.\n')
+if which_current_climate == 'tmy' or which_current_climate == 'TMY' or which_current_climate == 'gcm' or which_current_climate == 'GCM': 
+    raise Exception('\nERROR: which_current_climate is ,' + which_current_climate + ' should be set to ''tmy'' or ''gcm''.\n')
+if not not outformats: # List is not empty
+    if 'tmy' in (name.lower() for name in outformats) or 'csv' in (name.lower() for name in outformats) :
+        raise Exception('\nERROR: Invalid output format chosen.')
+    else:
+        print('\nWarning not output formats chosen, will not write out data to a file.\n');
+        
 #------------------------------------------------------------------------------
 #       Run scripts
 #------------------------------------------------------------------------------

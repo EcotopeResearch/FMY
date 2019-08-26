@@ -23,10 +23,9 @@ class weather:
         elif tmy23 == 3:
             self.file_ext = TMY3EXT;
         else:
-            print('Invalid TMY Data type chosen, should be 2 or 3, you choose '
-                  + str(tmy23) +'. Defaulting to tmy2 format');
-            self.file_ext = '.tm2';
-        
+            print('\nERROR: Invalid TMY Data type chosen, should be 2 or 3, you choose '
+                  + str(tmy23) +'.');
+                  
         self.lon        = 0.0;
         self.lat        = 0.0;
         
@@ -447,23 +446,24 @@ class weather:
         g.write(head);
         
         ######################
-        line = f.readline().split(',');
+        line = f.readline();
         ind = 0;
         while line:
-    
+            line = line.split(',');
+            
             # tdrybulb (deg C)
-            line[31]               = str(self.tdry[ind]);
+            line[31]               = str(round(self.tdry[ind],1));
             # relative humidity (%)
-            line[37]               = str(self.rhs[ind] * 100); 
+            line[37]               = str(round(self.rhs[ind])); 
             # tdew (deg C) to conform with TB code
-            line[34]               = str(self.tdew[ind]); 
+            line[34]               = str(round(self.tdew[ind],1)); 
             
             # Total horizontal solar Wh/m2
-            line[4]               = str(self.tothor[ind]);
+            line[4]               = str(round(self.tothor[ind]));
             # Direct normal solar Wh/m2
-            line[7]               = str(self.dirnorm[ind]);
+            line[7]               = str(round(self.dirnorm[ind]));
             # Diffuse Horizontal Solar Wh/m2
-            line[10]              = str(self.difhor[ind]); 
+            line[10]              = str(round(self.difhor[ind])); 
 
             # Write line
             g.write(','.join(line));

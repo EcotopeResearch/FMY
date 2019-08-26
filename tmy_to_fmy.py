@@ -38,6 +38,10 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
     # sc - the scenario number
     # cc0 - which current climate is used
     """
+    
+    # Turn interactive plotting off. Will slow program way down if on.
+    plt.ioff()
+
     #=========================================================
     #                Initialize FMY
     #=========================================================
@@ -79,7 +83,7 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
     # Check for dew point adjustments
     if 8 in var:
         if 0 not in var:  
-            print('\nWARNING: Can not find fmy dew point without drybulb, include 0 and 1 in var selection.\n');
+            raise Exception('\nERROR:: Can not find fmy dew point without drybulb, include 0 and 1 in var selection.\n');
         else:
             Tdew_fmy = adjust_dew_point_Belcher(tmy, dft, df1, T_fmy);
     else:
@@ -216,12 +220,12 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
     #               Check and Finilize FMY
     #=========================================================
         
-    if sum(np.isnan(T_fmy)) > 0:     print('\nWARNING: T_fmy contains NAN for ' + city_name + '\n')
-    if sum(np.isnan(RHS_fmy)) > 0:   print('\nWARNING: RHS_fmy contains NAN for ' + city_name + '\n') 
-    if sum(np.isnan(Tdew_fmy)) > 0:  print('\nWARNING: Tdew_fmy contains NAN for ' + city_name + '\n') 
-    if sum(np.isnan(Rg_fmy)) > 0:    print('\nWARNING: Rg_fmy contains NAN for ' + city_name + '\n') 
-    if sum(np.isnan(Rdir_fmy)) > 0:  print('\nWARNING: Rdir_fmy contains NAN for ' + city_name + '\n')   
-    if sum(np.isnan(Rdiff_fmy)) > 0: print('\nWARNING: Rdiff_fmy contains NAN for ' + city_name + '\n') 
+    if sum(np.isnan(T_fmy)) > 0:     raise Exception('\nERROR: T_fmy contains NAN for ' + city_name + '\n')
+    if sum(np.isnan(RHS_fmy)) > 0:   raise Exception('\nERROR: RHS_fmy contains NAN for ' + city_name + '\n') 
+    if sum(np.isnan(Tdew_fmy)) > 0:  raise Exception('\nERROR: Tdew_fmy contains NAN for ' + city_name + '\n') 
+    if sum(np.isnan(Rg_fmy)) > 0:    raise Exception('\nERROR: Rg_fmy contains NAN for ' + city_name + '\n') 
+    if sum(np.isnan(Rdir_fmy)) > 0:  raise Exception('\nERROR: Rdir_fmy contains NAN for ' + city_name + '\n')   
+    if sum(np.isnan(Rdiff_fmy)) > 0: raise Exception('\nERROR: Rdiff_fmy contains NAN for ' + city_name + '\n') 
     
     if sum(RHS_fmy < 0) > 0 or sum(RHS_fmy > 100) > 0:
         print('\nWARNING: The FMY of Relative Humidity is less than 0% ('+str(sum(RHS_fmy < 0))+ 
@@ -230,14 +234,18 @@ def adjust_to_fmy(var, methods, tmy, dft, dfam, df1,
                     
     if sum(Tdew_fmy > T_fmy) > 0:  
         print('\nWARNING: The FMY of Dew Point is greater than the Dry Bulb ('+
-               str(sum(Tdew_fmy > T_fmy))+ ' values) for ' + city_name + '\n')
+               str(sum(Tdew_fmy > T_fmy))+ ' values) for ' + city_name + '')
+        if sum(tfmy.Tdew_tmy > tfmy.T_tmy) > 0:
+            print('\nWARNING: This is a result of the TMY data where the Dew Point is greater than Dry Bulb (' + 
+                  str(sum(tfmy.Tdew_tmy > tfmy.T_tmy))+ ' values) for ' + city_name + '\n')
+            
     
     if sum(Rdiff_fmy > Rg_fmy) > 0:
-        print('\nWARNING: The FMY of the diffuse horizontal irradiance is greater than the total global horizontal irradiance (' + 
+        print('\nWARNING: The FMY of the diffuse horizontal radiation is greater than the total global horizontal radiation (' + 
                str(sum(Rdiff_fmy > Rg_fmy))+ ' values) for ' + city_name + '')
         if sum(tfmy.Rdiff_tmy > tfmy.Rg_tmy) > 0:
-            print('\nWARNING: This is a result of the TMY data where the diffuse horizontal irradiance is greater than the total global horizontal irradiance (' + 
-                  str(sum(tfmy.Rdiff_tmy > tfmy.Rg_tmy))+ ' values) for ' + city_name + '')
+            print('\nWARNING: This is a result of the TMY data where the diffuse horizontal radiation is greater than the total global horizontal radiation (' + 
+                  str(sum(tfmy.Rdiff_tmy > tfmy.Rg_tmy))+ ' values) for ' + city_name + '\n')
             
     # Store the new variables in a data frame to export which will become a weather object...
     tfmy['T_fmy']       = T_fmy;
