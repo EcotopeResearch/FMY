@@ -35,9 +35,9 @@ Takes Cities:
     6. Soda_Springs (ID)
     7. Havre (MT)
     8. Miles City (MT)
- 
-city        = [ "WASeattle3", "ORCorvallis3", "IDBoise3", "ORRedmond3", "NVElko3",
-               "IDBurley3", "IDSodaSprings3", "MTHavre3", "MTMilesCity3" ];
+    9. Portland (OR)
+    10.Spokane (WA)
+    11.Kalispell (MT)
    
 workflow:
     Set specifics (i.e. variables, cities, models, scenarios, and methods)
@@ -64,11 +64,11 @@ workingdir = 'R:/NPCC/2019_Future_Meteorological_Years (19-028-BL)/Python/FMY'
 
 # Path to local TMY data in .tm2 format 
 # File names are state_abbreviation_city_2or3.format, for example WASeattle3.tm2
-weatherpath = './TMY/';# "E:/TMY2DATA/"; 
-   
-# Data path for GCM data if download_data = True
-datapath = "C:/Users/paul/Documents/FMY/GCM_Data/";
+weatherpath = './TMY/'; #"E:/TMY2DATA/"; 
 load_tmy23 = 3; #Input files are in (2) TMY2 fromat or (3) TMY3 format
+
+# Data path for GCM data if download_data = True
+datapath = "./GCM_Data/"; #"C:/Users/paul/Documents/FMY/GCM_Data/";
 
 # Output path for graphs
 graphpath = "./Graphs_FMY/"; 
@@ -92,9 +92,11 @@ outputpath = "./output_FMY/";
     6. Soda_Springs (ID)
     7. Havre (MT)
     8. Miles City (MT)
+    9. Portland (OR)
+    10.Spokane (WA)
+    11.Kalispell (MT)
 """
-stations    = [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ];
-stations    = [ 0, 2]; 
+stations    = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ];
 
 
 #------------------------------------------------------------------------------

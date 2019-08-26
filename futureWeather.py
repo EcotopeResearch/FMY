@@ -9,11 +9,11 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
                   download_data):
  
     #=========================================================
+    import os;
     import numpy as np;
     import pandas as pd;
     import matplotlib.pyplot as plt;
     import seaborn as sns;
-    
     from cfg import METHODNAMES, VARNAME, MODELNAME, SCENNAME,HRS_IN_YEAR, CITY;
     
     from OPeNDAP_load import get_data;
@@ -208,6 +208,8 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
     if not suppress_all_plots:
         for mm in models:
             for ss in stations:
+                os.makedirs(graphpath + CITY[ss] + '/', exist_ok=True)
+
                 for sc in scen:
                     for vv in var:
                         # Plot temperatures

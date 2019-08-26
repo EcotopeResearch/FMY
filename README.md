@@ -8,7 +8,7 @@ A script to make future hourly weather from the typical meteorological year (TMY
 FMY was developed for usage with simulation in mind, it is intended to read TMY2 and TMY3 files and to write FMY files in the TMY2 and TMY3 format for SEEM. 
 
 ## Before Running
-1. Open main.py in a python or text editor.
+1. Open main.py in a python or text editor like Spyder.
 2. Set the paths to the data directory, and the output paths for graphs and fmy.tm2 files. The script will create the output directories if they don't exist.
 3. Set output formats, 'csv' or 'tmy'
 4. Set which stations to look at, numbers correspond to the cities in the city list.
