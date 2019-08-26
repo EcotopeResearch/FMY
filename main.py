@@ -64,14 +64,14 @@ workingdir = 'R:/NPCC/2019_Future_Meteorological_Years (19-028-BL)/Python/FMY'
 
 # Path to local TMY data in .tm2 format 
 # File names are state_abbreviation_city_2or3.format, for example WASeattle3.tm2
-weatherpath = 'C:/Users/paul/Documents/TMY/';# "E:/TMY2DATA/"; 
+weatherpath = './TMY/';# "E:/TMY2DATA/"; 
    
 # Data path for GCM data if download_data = True
-datapath = "C:/Users/paul/Documents/TMY/GCM_Data/";
+datapath = "C:/Users/paul/Documents/FMY/GCM_Data/";
 load_tmy23 = 3; #Input files are in (2) TMY2 fromat or (3) TMY3 format
 
 # Output path for graphs
-graphpath = "./Graphs_FMY_all_models/"; 
+graphpath = "./Graphs_FMY/"; 
   
 # Output path for future .tm2 and .csv files
 outputpath = "./output_FMY/";
@@ -94,7 +94,7 @@ outputpath = "./output_FMY/";
     8. Miles City (MT)
 """
 stations    = [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ];
-stations    = [ 3,4]; 
+stations    = [ 0, 2]; 
 
 
 #------------------------------------------------------------------------------
@@ -130,7 +130,7 @@ NOTE:
 #models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] # All complete sets
 #models      = [3, 4, 5, 6, 8, 9, 10, 11, 12, 15] #The RMJOC-II “10”. Note issues with model 4 in scenario=0 (historical)
 models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 15] # Selction of 12, RMJOC-II with extras
-models      = [5] # for testing
+models      = [3] # for testing
 
 # 1 is RCP4.5, 2 is RCP8.5
 scenarios        = [ 1, 2 ] 
@@ -166,7 +166,7 @@ outformats = ['csv', 'tmy'];
 # Which Variables hourly plots
 hourly_plots =  [0, 1, 2, 3, 5, 8];
 
-suppress_all_plots = True; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
+suppress_all_plots = False; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
 
 # If download the GCM dataset, can be useful if you are worried about getting 
 # booted from someone's server
@@ -274,19 +274,23 @@ if len(tmy3_years) !=  2or max(tmy3_years) > 2005 or min(tmy3_years) < 1950:
     raise Exception("\nERROR: tmy3_years must be a list of two years bounded by 1950 and 2005, i.e. [1976, 2005]")
 
 #Check things are in bounds 
-if not (0 < scenarios <= 2):
+if min(scenarios) < 1 or max(scenarios) > 2:
     raise Exception('\nERROR: Invalid scenarios chosen, can only choose 1 or 2, but user input was: '+ str(scenarios)+'.\n')
+    
+    
 if not (0 < method <= 3):
     raise Exception('\nERROR: Invalid method chosen, can only choose 1, 2, or 3, but user input was: '+ str(method)+'.\n')
 if not (0 <=  bias_correction_method <=3):  
     raise Exception("\nERROR: Invalid bias_correction_method chose can be 0, 1, 2, 3, user input was: "+ str(bias_correction_method)+'.\n')
-if which_current_climate == 'tmy' or which_current_climate == 'TMY' or which_current_climate == 'gcm' or which_current_climate == 'GCM': 
-    raise Exception('\nERROR: which_current_climate is ,' + which_current_climate + ' should be set to ''tmy'' or ''gcm''.\n')
+    
+if not (which_current_climate == 'tmy' or which_current_climate == 'TMY' or which_current_climate == 'gcm' or which_current_climate == 'GCM'): 
+    raise Exception('\nERROR: which_current_climate is ' + which_current_climate + ' should be set to ''tmy'' or ''gcm''.\n')
+    
 if not not outformats: # List is not empty
-    if 'tmy' in (name.lower() for name in outformats) or 'csv' in (name.lower() for name in outformats) :
+    if not ('tmy' in (name.lower() for name in outformats) or 'csv' in (name.lower() for name in outformats)) :
         raise Exception('\nERROR: Invalid output format chosen.')
-    else:
-        print('\nWarning not output formats chosen, will not write out data to a file.\n');
+else:
+    print('\nWarning no output formats chosen, will not write out data to a file.\n');
         
 #------------------------------------------------------------------------------
 #       Run scripts

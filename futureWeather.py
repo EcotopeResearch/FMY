@@ -433,7 +433,7 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
                 df_fmy = pd.concat([df_fmy, tempdf], axis = 0);
                 
                 if 'csv' in (name.lower() for name in outformats) :
-                    tempdf.to_csv(outputpath + 'FMY_' + CITY[ss] + '_' + MODELNAME[mm] +
+                    tempdf.to_csv(outputpath + 'FMY_Data_' + CITY[ss] + '_' + MODELNAME[mm] +
                               '_' +  SCENNAME[sc] + '_' + METHODNAMES[method-1] +
                               '_' + which_current_climate + '.csv')
     

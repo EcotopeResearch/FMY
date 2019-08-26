@@ -433,7 +433,7 @@ class weather:
     def write_tmy3(self, outdir, modelname, scenname, future_yrs):
                 
         f = open(self.weatherpath+TMY3NUMBER[CITY.index(self.city)]+self.file_ext,'r');
-        g = open(outdir + self.city + "_future_" + 
+        g = open(outdir + TMY3NUMBER[CITY.index(self.city)] + "_future_" + 
                  str(future_yrs[0]) + "_" + str(future_yrs[0]) + "_" +
                  modelname + "_" +  scenname +  self.file_ext , 'w+');
                  

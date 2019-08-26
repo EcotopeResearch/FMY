@@ -5,5 +5,8 @@ __pycache__/cfg.cpython-37.pyc
 __pycache__/cfg.cpython-37.pyc
 *.pyc
 __pycache__/cfg.cpython-37.pyc
-*.csv
 *.png
+output_FMY/FMY_IDBoise3_CNRM-CM5_rcp85_Belcher_gcm.csv
+output_FMY
+Graphs_FMY
+output_FMY_all_models
