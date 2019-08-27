@@ -74,7 +74,7 @@ datapath = "./GCM_Data/"; #"C:/Users/paul/Documents/FMY/GCM_Data/";
 graphpath = "./Graphs_FMY/"; 
   
 # Output path for future .tm2 and .csv files
-outputpath = "./output_FMY/";
+outputpath = "./output_FMY_all_models/" # "./output_FMY/";
 
 
 #------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ NOTE:
 #models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] # All complete sets
 #models      = [3, 4, 5, 6, 8, 9, 10, 11, 12, 15] #The RMJOC-II “10”. Note issues with model 4 in scenario=0 (historical)
 models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 15] # Selction of 12, RMJOC-II with extras
-models      = [3] # for testing
+#models      = [3] # for testing
 
 # 1 is RCP4.5, 2 is RCP8.5
 scenarios        = [ 1, 2 ] 
@@ -152,7 +152,7 @@ future_years = [ 2020, 2049 ]; # Future years from 2006 - 2099.
 #   6. Eastward Wind Component (Not FMY Supported)
 #   7. Northward Wind Component (Not FMY Supported)
 #   8. Specific Humidity
-variables         = [0, 1, 2, 3, 8]
+variables         = [0, 1, 2, 3, 5, 8]
 
 #------------------------------------------------------------------------------
 #   Output formats
@@ -168,7 +168,7 @@ outformats = ['csv', 'tmy'];
 # Which Variables hourly plots
 hourly_plots =  [0, 1, 2, 3, 5, 8];
 
-suppress_all_plots = False; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
+suppress_all_plots = True; #0 plots print to pdf which impeeds speed, 1 no plots are made at all.
 
 # If download the GCM dataset, can be useful if you are worried about getting 
 # booted from someone's server

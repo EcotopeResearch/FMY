@@ -73,7 +73,7 @@ class weather:
         # Load TMY2
         if self.file_ext == TMY2EXT:
             f = open(self.weatherpath+self.city+self.file_ext,'r');
-
+            
             # Header read for lat and lon
             head = f.readline();
             self.lat = int(head[39:41]) + int(head[42:44])/60.0;
@@ -121,7 +121,7 @@ class weather:
         # Load TMY3
         elif self.file_ext == TMY3EXT:
             f = open(self.weatherpath+TMY3NUMBER[CITY.index(self.city)]+self.file_ext,'r');
-            
+                        
             # Header read for lat and lon
             head = f.readline().split(',');
             self.lat = float(head[4]) ;
