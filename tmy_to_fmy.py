@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Aug  5 09:20:27 2019
-
-@author: paul
+Functions for converting TMY to FMY
 """
 
 from cfg import MODELNAME, SCENNAME, METHODNAMES, MONTHS_IN_YEAR;

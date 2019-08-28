@@ -1,51 +1,8 @@
 
 """
 #Author:	Paul Kintner
-#Updated: 	8/14/2019
+#Updated: 	8/28/2019
 #Description: 	This script uses OPeNDAP to download the specified subset of 
-the MACAv2-METDATA data then applies multiple methods for temporally downscalling 
-data to hourly features.
-
-MACA advocates for using at least 10 models in analyses. It may be worth the effort 
-to evaluate the relevant variables against observations, just to be cognizant of 
-model biases, but recognize that most studies have found little or no difference 
-in culling or weighting model outputs.
-
-The important outputs changed in the new future TMY file are:
-1.	Total horizontal solar Btu/h ft^2
-2.	Direct normal solar: Btu/h ft^2
-3.	Diffuse Horizontal Solar: Btu/h ft^2
-4.	Tdrybulb
-5.	Relative Humidity
-
-and maybe
-6.	Windspeed
-7.	Wind direction azimuth
-8.	Could cover fraction
-
-And prints into TMY3  and TMY2 formatting
-
-Takes Cities: 
-    0. Seattle (WA)
-    1. Corvallis (OR)
-    2. Boise (ID)
-    3. Redmond(OR)
-    4. Elko (NV)
-    5. Burley (ID)
-    6. Soda_Springs (ID)
-    7. Havre (MT)
-    8. Miles City (MT)
-    9. Portland (OR)
-    10.Spokane (WA)
-    11.Kalispell (MT)
-   
-workflow:
-    Set specifics (i.e. variables, cities, models, scenarios, and methods)
-    Load tmy2 file
-    Load GCM historical and future
-    Determine future peroid of interest and cull the data
-    Adjust the variables asked to be adjusted
-    Write output file in specified formats
 """
 import os
 import subprocess
@@ -65,16 +22,17 @@ workingdir = 'R:/NPCC/2019_Future_Meteorological_Years (19-028-BL)/Python/FMY'
 # Path to local TMY data in .tm2 format 
 # File names are state_abbreviation_city_2or3.format, for example WASeattle3.tm2
 weatherpath = './TMY/'; #"E:/TMY2DATA/"; 
-load_tmy23 = 3; #Input files are in (2) TMY2 fromat or (3) TMY3 format
+# Input files are in (2) TMY2 fromat or (3) TMY3 format
+load_tmy23 = 3;
 
 # Data path for GCM data if download_data = True
-datapath = "./GCM_Data/"; #"C:/Users/paul/Documents/FMY/GCM_Data/";
+datapath = "./GCM_Data/"; 
 
 # Output path for graphs
 graphpath = "./Graphs_FMY/"; 
   
 # Output path for future .tm2 and .csv files
-outputpath = "./output_FMY_all_models/" # "./output_FMY/";
+outputpath = "./output_FMY/";
 
 
 #------------------------------------------------------------------------------
@@ -132,15 +90,15 @@ NOTE:
 #models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] # All complete sets
 #models      = [3, 4, 5, 6, 8, 9, 10, 11, 12, 15] #The RMJOC-II “10”. Note issues with model 4 in scenario=0 (historical)
 models      = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 15] # Selction of 12, RMJOC-II with extras
-#models      = [3] # for testing
-
-# 1 is RCP4.5, 2 is RCP8.5
-scenarios        = [ 1, 2 ] 
-scenarios = [2]
+models      = [5] # for testing
 
 # Years to average over
 tmy3_years   = [ 1976, 2005 ]; # Years that the tmy3 weather files are taken from. This is the baseline time frame too.
 future_years = [ 2020, 2049 ]; # Future years from 2006 - 2099.
+
+# 1 is RCP4.5, 2 is RCP8.5
+scenarios        = [ 1, 2 ] 
+scenarios = [2]
 
 # Variables:
 #   0. Max Temperature
@@ -159,9 +117,9 @@ variables         = [0, 1, 2, 3, 5, 8]
 #------------------------------------------------------------------------------
 
 # FMY output formats, will print to csv, tmy2, and tmy3. Is a list of strings,
-#  containing ['csv','tmy'], and any combination of them or none. 
-# csv will output a csv file containing just the variables that are changed before and after the change.
-# csv DOES NOT write a TMY3 formated file
+# containing ['csv','tmy'], and any combination of them or none. 
+# csv will output a csv file containing just the variables that are changed
+# before and after the change. 'csv' DOES NOT write a TMY3 formated file
 # tmy will output a tmy file corresponding to the input file. 
 outformats = ['csv', 'tmy'];
 
@@ -172,7 +130,7 @@ suppress_all_plots = True; #0 plots print to pdf which impeeds speed, 1 no plots
 
 # If download the GCM dataset, can be useful if you are worried about getting 
 # booted from someone's server
-download_data = True; 
+download_data = False; 
 
 #------------------------------------------------------------------------------
 #   Experimental Method Options (Leave as is if you aren't sure)
