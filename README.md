@@ -20,7 +20,7 @@ Clone the git repository locally or download and extract the code.
 7. Set which scenario to look at (1 is RCP4.5, 2 is RCP8.5).
 8. Set which variables to transform, a typical usage will use numbers [0,1,2,3,5,8].
 9. Set output formats, 'csv' or 'tmy', FMY does not convert between TMY2 and TMY3.
-Optional: Set download_data to True, which will download data to the working directory, which is useful for running in batch since MACA will boot you if you're hogging their servers.
+Optional: Set download_data to True, which will download GCM data to the working directory, which is useful for running in batch since MACA will boot you if you're hogging their servers.
 
 ## Runing FMY 
 Open main.py in a python development evironment (i.e. Spyder) and run.
