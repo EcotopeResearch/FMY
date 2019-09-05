@@ -158,6 +158,7 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
         # Get data from the MACA address           
         filehandle = Dataset(fullfilename,'r',format="NETCDF4")     
             
+        print('Parsing dataset...')
         # Sort data
         lathandle   = filehandle.variables['lat']
         lonhandle   = filehandle.variables['lon']
@@ -248,6 +249,7 @@ def load_data(scen, var, model, lat_targets, lon_targets, stations, daily, inter
                     with open(datapath+CITY[stations[ss]]+fileName, 'w') as out_file:
                             json.dump({'timehandle': timehandle[:].data.tolist(),
                                        str(VARNAME[var]): station_data.tolist()}, out_file) 
+            print('Parsed ' + CITY[stations[ss]])
     
     # All the data is on the computer
     else: 

@@ -2,7 +2,6 @@
 """
 #Author:	Paul Kintner
 #Updated: 	8/28/2019
-#Description: 	This script uses OPeNDAP to download the specified subset of 
 """
 import os
 import subprocess
@@ -55,7 +54,7 @@ outputpath = "./output_FMY/";
     11.Kalispell (MT)
 """
 stations    = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ];
-
+stations    = [ 0, 1, 3];
 
 #------------------------------------------------------------------------------
 #   MODEL/VAR/SCEN CHOICES
@@ -121,7 +120,7 @@ variables         = [0, 1, 2, 3, 5, 8]
 # csv will output a csv file containing just the variables that are changed
 # before and after the change. 'csv' DOES NOT write a TMY3 formated file
 # tmy will output a tmy file corresponding to the input file. 
-outformats = ['csv', 'tmy'];
+outformats = ['csv', 'tmy2', 'tmy3'];
 
 # Which Variables hourly plots
 hourly_plots =  [0, 1, 2, 3, 5, 8];
@@ -130,7 +129,7 @@ suppress_all_plots = True; #0 plots print to pdf which impeeds speed, 1 no plots
 
 # If download the GCM dataset, can be useful if you are worried about getting 
 # booted from someone's server
-download_data = False; 
+download_data = True; 
 
 #------------------------------------------------------------------------------
 #   Experimental Method Options (Leave as is if you aren't sure)
@@ -166,7 +165,7 @@ def main( wpth, dtpth, gpth, opth, outfrmt,tmy23,
     # Check for packages
     if importlib.util.find_spec('pip') is None: 
        print("Installing pip... \n")
-       cmd = "sudo easy_install pip"
+       cmd = "sudo easy_install conda"
        os.system(cmd)
             
     for package in pkgs:

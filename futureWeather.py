@@ -435,13 +435,17 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
                 df_fmy = pd.concat([df_fmy, tempdf], axis = 0);
                 
                 if 'csv' in (name.lower() for name in outformats) :
+                    print('Writing to '+CITY[ss]+' csv file...')
                     tempdf.to_csv(outputpath + 'FMY_Data_' + CITY[ss] + '_' + MODELNAME[mm] +
                               '_' +  SCENNAME[sc] + '_' + METHODNAMES[method-1] +
                               '_' + which_current_climate + '.csv')
+                    print('Wrote '+CITY[ss]+' csv file.\n')
     
-                if 'tmy' in (name.lower() for name in outformats) :
+                if 'tmy2' in (name.lower() for name in outformats) :
+                    print('Writing to '+CITY[ss]+' TMY2 file...')
+
                     #Write to fmy
-                    fmy = weather(weatherpath, CITY[ss], load_tmy23);
+                    fmy = weather(weatherpath, CITY[ss], 2);
                     fmy.get_weather();
                     fmy.tdry    = tempdf.T_fmy;
                     fmy.tdew    = tempdf.Tdew_fmy;
@@ -451,4 +455,20 @@ def futureWeather( weatherpath, datapath, graphpath, outputpath, outformats, loa
                     fmy.difhor  = tempdf.Rdiff_fmy;
                     
                     fmy.write_fmy( outputpath, MODELNAME[mm], SCENNAME[sc], future_years );
+                    print('Wrote '+CITY[ss]+' TMY2 file.\n')
+
+                if 'tmy3' in (name.lower() for name in outformats) :
+                    print('Writing '+CITY[ss]+' to TMY3 file...')
+
+                    #Write to fmy
+                    fmy = weather(weatherpath, CITY[ss], 3);
+                    fmy.get_weather();
+                    fmy.tdry    = tempdf.T_fmy;
+                    fmy.tdew    = tempdf.Tdew_fmy;
+                    fmy.rhs     = tempdf.RHS_fmy;
+                    fmy.tothor  = tempdf.Rg_fmy;
+                    fmy.dirnorm = tempdf.Rdir_fmy;
+                    fmy.difhor  = tempdf.Rdiff_fmy;
                     
+                    fmy.write_fmy( outputpath, MODELNAME[mm], SCENNAME[sc], future_years );
+                    print('Wrote '+CITY[ss]+' TMY3 file.\n')

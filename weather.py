@@ -23,9 +23,11 @@ class weather:
         elif tmy23 == 3:
             self.file_ext = TMY3EXT;
         else:
-            print('\nERROR: Invalid TMY Data type chosen, should be 2 or 3, you choose '
+            raise Exception('\nERROR: Invalid TMY Data type chosen, should be 2 or 3, you chose '
                   + str(tmy23) +'.');
-                  
+         
+        self.check_file();
+    
         self.lon        = 0.0;
         self.lat        = 0.0;
         
@@ -336,12 +338,29 @@ class weather:
         ax.plot(np.array(self.hoy)/8760*12+1, var,'-')
         plt.xticks(list(range(0,13)))
         plt.show()
+        
+###############################################################################
+
+    def check_file(self):
+        import os
+   
+        if self.file_ext == TMY2EXT:
+            filename = self.weatherpath+self.city+self.file_ext;
+            if not os.path.isfile(filename):
+                raise Exception("ERROR: File " + filename + " does not exist, check tmy2 and tmy3 directory and names \n")
+                
+        elif self.file_ext == TMY3EXT:
+            filename = self.weatherpath+TMY3NUMBER[CITY.index(self.city)]+self.file_ext
+            if not os.path.isfile(filename):
+                raise Exception("ERROR: File " + filename + " does not exist, check tmy2 and tmy3 directory and names \n")
+        
 ###############################################################################
         
     def write_tmy_file(self, outdir, modelname, scenname):
         
         if self.file_ext == TMY2EXT:
             self.write_tmy2( outdir, modelname, scenname)
+            
         elif self.file_ext == TMY3EXT:
             self.write_tmy3( outdir, modelname, scenname)
             
@@ -383,6 +402,8 @@ class weather:
         
     def write_tmy2(self, outdir, modelname, scenname, future_yrs):
         
+        self.check_file()
+
         self.check_tmy2_limits();
         
         f = open(self.weatherpath+self.city+self.file_ext,'r');
@@ -432,6 +453,8 @@ class weather:
 
     def write_tmy3(self, outdir, modelname, scenname, future_yrs):
                 
+        self.check_file()
+        
         f = open(self.weatherpath+TMY3NUMBER[CITY.index(self.city)]+self.file_ext,'r');
         g = open(outdir + TMY3NUMBER[CITY.index(self.city)] + "_future_" + 
                  str(future_yrs[0]) + "_" + str(future_yrs[0]) + "_" +
@@ -475,4 +498,4 @@ class weather:
         f.close();
         g.close();
         
-
+        
