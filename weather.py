@@ -60,10 +60,10 @@ class weather:
         self.dirnorm    = np.array([0.0] * HRS_IN_YEAR); #Direct normal solar
         self.difhor     = np.array([0.0] * HRS_IN_YEAR); #Diffuse Horizontal Solar
         
-       # self.wind_speed = np.array([0.0] * HRS_IN_YEAR); #windspeed m/s
-       # self.wind_dir   = np.array([0.0] * HRS_IN_YEAR); #wind direction azimuth
+        self.wind_speed = np.array([0.0] * HRS_IN_YEAR); #windspeed m/s
+        self.wind_dir   = np.array([0.0] * HRS_IN_YEAR); #wind direction azimuth
             
-       # self.cloud      = np.array([0.0] * HRS_IN_YEAR); #Could cover fraction
+        self.cloud      = np.array([0.0] * HRS_IN_YEAR); #Could cover fraction
         
         
 ###############################################################################
@@ -328,7 +328,29 @@ class weather:
         
  ###############################################################################
  
-    def plot_hourly_variable(self,var):
+    def plot_hourly_variable(self,str_var):
+        
+    if str_var == 'tdry':
+        plot_variable(self.tdry);
+    elif str_var == 'tdew':
+        plot_variable(self.tdew);
+    elif str_var == 'rhs':
+        plot_variable(self.rhs);
+        
+    elif str_var == 'huss':
+        plot_variable(self.huss);
+    elif str_var == 'press':
+        plot_variable(self.press);
+    elif str_var == 'tothor':
+        plot_variable(self.tothor);
+    elif str_var == 'dirnorm':
+        plot_variable(self.dirnorm);
+    elif str_var == 'difhor':
+        plot_variable(self.difhor);
+        
+        
+    def plot_variable(self,var):
+
         import matplotlib.pyplot as plt;
         
         fig = plt.figure()
