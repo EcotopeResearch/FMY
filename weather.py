@@ -330,23 +330,23 @@ class weather:
  
     def plot_hourly_variable(self,str_var):
         
-    if str_var == 'tdry':
-        plot_variable(self.tdry);
-    elif str_var == 'tdew':
-        plot_variable(self.tdew);
-    elif str_var == 'rhs':
-        plot_variable(self.rhs);
-        
-    elif str_var == 'huss':
-        plot_variable(self.huss);
-    elif str_var == 'press':
-        plot_variable(self.press);
-    elif str_var == 'tothor':
-        plot_variable(self.tothor);
-    elif str_var == 'dirnorm':
-        plot_variable(self.dirnorm);
-    elif str_var == 'difhor':
-        plot_variable(self.difhor);
+        if str_var == 'tdry':
+            self.plot_variable(self.tdry);
+        elif str_var == 'tdew':
+            self.plot_variable(self.tdew);
+        elif str_var == 'rhs':
+            self.plot_variable(self.rhs);
+            
+        elif str_var == 'huss':
+            self.plot_variable(self.huss);
+        elif str_var == 'press':
+            self.plot_variable(self.press);
+        elif str_var == 'tothor':
+            self.plot_variable(self.tothor);
+        elif str_var == 'dirnorm':
+            self.plot_variable(self.dirnorm);
+        elif str_var == 'difhor':
+            self.plot_variable(self.difhor);
         
         
     def plot_variable(self,var):
