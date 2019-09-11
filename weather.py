@@ -331,25 +331,24 @@ class weather:
     def plot_hourly_variable(self,str_var):
         
         if str_var == 'tdry':
-            self.plot_variable(self.tdry);
+            self.plot_variable(self.tdry,str_var);
         elif str_var == 'tdew':
-            self.plot_variable(self.tdew);
+            self.plot_variable(self.tdew,str_var);
         elif str_var == 'rhs':
-            self.plot_variable(self.rhs);
-            
+            self.plot_variable(self.rhs,str_var);
         elif str_var == 'huss':
-            self.plot_variable(self.huss);
+            self.plot_variable(self.huss,str_var);
         elif str_var == 'press':
-            self.plot_variable(self.press);
+            self.plot_variable(self.press,str_var);
         elif str_var == 'tothor':
-            self.plot_variable(self.tothor);
+            self.plot_variable(self.tothor,str_var);
         elif str_var == 'dirnorm':
-            self.plot_variable(self.dirnorm);
+            self.plot_variable(self.dirnorm,str_var);
         elif str_var == 'difhor':
-            self.plot_variable(self.difhor);
+            self.plot_variable(self.difhor,str_var);
         
         
-    def plot_variable(self,var):
+    def plot_variable(self,var,str_var):
 
         import matplotlib.pyplot as plt;
         
@@ -359,7 +358,9 @@ class weather:
         ax.ticklabel_format(style='plain')
         ax.plot(np.array(self.hoy)/8760*12+1, var,'-')
         plt.xticks(list(range(0,13)))
+        plt.title(str_var)
         plt.show()
+        
         
 ###############################################################################
 
